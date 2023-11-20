@@ -33,5 +33,6 @@ type Grid struct {
 }
 
 type Landscape struct {
-	grid [][]Grid
+	grid  [][]Grid
+	width int
 }
