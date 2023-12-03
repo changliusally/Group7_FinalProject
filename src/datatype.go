@@ -25,11 +25,15 @@ type Population struct {
 	mutateAge   int
 	birthRate   float64
 	deathRate   float64
+	mateFreq 	float64 //mate frequency: whether integer or a proportion 
+	mateThreshold float64 //the distance that two individuals can meet and mate 
+	fecundity int //mean offspring numbers: fixed number 
+	femaleRate float64 //the percetage of the total offsprings that are female 
 }
 
 type Grid struct {
 	position      OrderedPair
-	landscapeType int //0:land 1:water
+	costDistance  int 
 }
 
 type Landscape struct {
