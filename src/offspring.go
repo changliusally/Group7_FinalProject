@@ -18,11 +18,14 @@ func DoOffspring(pairs [][]Individual, population Population, generation int) []
 	rand.Seed(time.Now().UnixNano())
 	var offspring []Individual
 
+	//update the offsprings of each mating pair 
 	for _, pair := range pairs {
 		// Determine the number of offspring
 		numOffspring := population.fecundity
-		var pairoffspring []Individual
+		//create a slice of Individuals representing the offsprings of this mating couple 
+		var pairoffspring []Individual 
 
+		//update each offspring 
 		for i := 0; i < numOffspring; i++ {
 			// Create new offspring
 			pairoffspring[i].age = 0
@@ -52,6 +55,8 @@ func DoOffspring(pairs [][]Individual, population Population, generation int) []
 	return offspring
 }
 
+//function poisson takes a lambda parameter and return a integer representing the number 
+//of offsprings of a mating couple is the population's breeding is poisson distribution 
 func poisson(lambda float64) int {
 	L := math.Exp(-lambda)
 	k := 0
@@ -64,8 +69,13 @@ func poisson(lambda float64) int {
 	return k - 1
 }
 
+//generateGenetics takes two integers as parents' genetics and return an integer
+//representing the offspring's genetics 
 func generateGenetics(father, mother int) int {
 	// Simple genetic model: AA (2), Aa (1), aa (0)
+
+	//generate a random number 
+	randVal := rand.Float64()
 
 	// Both parents are AA
 	if father == 2 && mother == 2 {
@@ -74,7 +84,7 @@ func generateGenetics(father, mother int) int {
 
 	// One parent is AA and the other is Aa
 	if (father == 2 && mother == 1) || (father == 1 && mother == 2) {
-		if rand.Float64() < 0.5 {
+		if randVal < 0.5 {
 			return 2 // AA
 		} else {
 			return 1 // Aa
@@ -83,7 +93,6 @@ func generateGenetics(father, mother int) int {
 
 	// Both parents are Aa
 	if father == 1 && mother == 1 {
-		randVal := rand.Float64()
 		if randVal < 0.25 {
 			return 0 // aa
 		} else if randVal >= 0.25 && randVal < 0.75 {
@@ -98,16 +107,17 @@ func generateGenetics(father, mother int) int {
 		return 0 // Offspring is aa
 	}
 
-	// One parent is aa and the other is Aa or AA
-	if (father == 0 && mother == 1) || (father == 1 && mother == 0) || (father == 0 && mother == 2) || (father == 2 && mother == 0) {
-		if rand.Float64() < 0.5 {
+	//one parent is AA and the other one is aa
+	if (father == 2 && mother == 0) || (father == 0 && mother == 2) {
+		return 1
+	}
+
+	// One parent is aa and the other is Aa
+	if (father == 0 && mother == 1) || (father == 1 && mother == 0) {
+		if randVal < 0.5 {
 			return 0 // aa
 		} else {
-			if mother == 1 || father == 1 {
-				return 1 // Aa
-			} else {
-				return 2 // AA
-			}
+			return 1 // Aa
 		}
 	}
 	return 0 // Default case, can be adjusted as needed
