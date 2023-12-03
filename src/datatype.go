@@ -12,18 +12,18 @@ type OrderedPair struct {
 }
 
 type Individual struct {
-	id       int
-	age      int
-	sex      int //0: male 1:famale
+	id int 
 	position OrderedPair
-	genetics int //single loci, 0:aa 1:Aa 2:AA
-	gen      int //which generation
+	sex int //we set 0 to be male and 1 to be female
+	age int
+	genetics int //we set 0 to be recessive and 1 to be dominant for a sigle allel
+	gen int 
+	grid int //which grid this individual is in 
 }
 
 type Population struct {
 	individuals []Individual
-	mutateAge   int
-	birthRate   float64
+	matureAge   int
 	deathRate   float64
 	mateFreq 	float64 //mate frequency: whether integer or a proportion 
 	mateThreshold float64 //the distance that two individuals can meet and mate 
@@ -32,8 +32,10 @@ type Population struct {
 }
 
 type Grid struct {
-	position      OrderedPair
-	costDistance  int 
+	position OrderedPair
+	label int 
+	kValue int //how many individuals that a grid could process at most 
+
 }
 
 type Landscape struct {
