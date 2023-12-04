@@ -90,7 +90,7 @@ func InitializeLand(width int) []Grid {
 
 // checkGrid function is to find the available grid that doesn't reach its capacity. 
 // It returned the slice of available grids' label.
-func checkGrid(land Landscape, pop []Individual) []int {
+func CheckGrid(land Landscape, pop []Individual) []int {
 	freegrid := make([]int,0)
 	for i := 0; i < 16; i++ {
 		count := 0
@@ -138,7 +138,7 @@ func w_choice(freegrid []int, prob []float64) int{
 
 // getProbArray is a function to retreive the cost distance information of all possible free grid for a specific offspring.
 // This output is typically input for the w_choice function.
-func getProbArray(offSpring []Individual, index int, probmatrix [][]float64, freegrid []int) []float64{
+func GetProbArray(offSpring []Individual, index int, probmatrix [][]float64, freegrid []int) []float64{
 	currOff := offSpring[index]
 	var probarray []float64 
 	
@@ -186,7 +186,7 @@ func DoSelection(dispOff Individual, chosenGrid int, fitness []float64) float64{
 
 
 // randomGridxy takes in the grid index, and will randomly generate a location within its range.
-func randomGridxy(target int, land Landscape) (float64,float64) {
+func RandomGridxy(target int, land Landscape) (float64,float64) {
 	x_min := land.grid[target].position.x
 	y_min := land.grid[target].position.y
 
@@ -200,7 +200,7 @@ func randomGridxy(target int, land Landscape) (float64,float64) {
 
 // calProb function will convert the cost distance matrix of n*n individuals into probability matrix.
 // We have different methods to do this conversion, include linear, nearest neighbor, random mixing and so on. (movement function)
-func calProb(method string, cdmatrix [][]float64) [][]float64 {
+func CalProb(method string, cdmatrix [][]float64) [][]float64 {
 	
 	max := findMax(cdmatrix)
 	min := findMin(cdmatrix)
@@ -224,7 +224,7 @@ func calProb(method string, cdmatrix [][]float64) [][]float64 {
 
 
 // copyMatrix function takes input a [][]float64, and will return a copy of this matrix.
-func copyMatrix(matrix [][]float64) [][]float64 {
+func CopyMatrix(matrix [][]float64) [][]float64 {
 	// Get the dimensions of the matrix
 	nrows := len(matrix)
 	ncols := len(matrix[0])
@@ -247,8 +247,8 @@ func copyMatrix(matrix [][]float64) [][]float64 {
 
 
 
-// findMin/findMax returns the smallest value in the matrix.
-func findMin(matrix [][]float64) float64 {
+//FindMin takes a distance matrix as input and returns the maximum value of the distance matrix
+func FindMin(matrix [][]float64) float64 {
 	// Assuming the matrix is not empty
 	minValue := matrix[0][0]
 
@@ -263,7 +263,8 @@ func findMin(matrix [][]float64) float64 {
 	return minValue
 }
 
-func findMax(matrix [][]float64) float64 {
+//FindMax takes a distance matrix as input and returns the maximum value of the distance matrix
+func FindMax(matrix [][]float64) float64 {
 	// Assuming the matrix is not empty
 	maxValue := matrix[0][0]
 
