@@ -146,9 +146,9 @@ func DoSelection(dispOff Individual, chosenGrid int, fitness [][]float64) float6
 
 
 
-// DoEmigration is a function than do dispersal of offsprings, and removed the redundant offspring when there is no available free grid for them to disperse.
-// It will traverse the list of offspring and allocate free grid for it to disperse, and record the successful dispersals.
-func DoEmigration(land Landscape, offSpring []Individual, probmatrix [][]float64, fitness [][]float64, pop Population) int{
+// DoDispersal is a function than do dispersal of offsprings, and removed the redundant offspring when there is no available free grid for them to disperse.
+// It will traverse the list of offspring and allocate free grid for it to disperse, and return the death number of offsprings.
+func DoDispersal(land Landscape, offSpring []Individual, probmatrix [][]float64, fitness [][]float64, pop Population) int{
 	
 	dispcount := 0
 	offcount := 0
