@@ -26,7 +26,6 @@ type Population struct {
 	matureAge   int
 	deathRate   float64
 	mateFreq 	float64 //mate frequency: whether integer or a proportion 
-	mateThreshold float64 //the distance that two individuals can meet and mate 
 	fecundity int //mean offspring numbers: fixed number 
 	femaleRate float64 //the percetage of the total offsprings that are female 
 }
