@@ -59,7 +59,7 @@ func DrawPopulation(population Population, landscape Landscape) Canvas {
 		//
 		c.SetFillColor(color)
 		//c.Circle(x+float64(gridSize)/2, y+float64(gridSize)/2, float64(gridSize)/2)
-		c.Circle(x, y, float64(landscape.width/100))
+		c.Circle(x, y, float64(landscape.width/800))
 		c.Fill()
 	}
 
