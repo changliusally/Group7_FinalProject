@@ -115,7 +115,7 @@ func Delete(indSclice []Individual, a Individual) []Individual {
 //variables are equal 
 func IsEqual(a, b Individual) bool {
 	bo := false 
-	if (a.position == b.position) && (a.sex == b.sex) && (a.age == b.age) && (a.genetics == b.genetics) && (a.gen == b.gen) {
+	if (a.position == b.position) && (a.sex == b.sex) && (a.age == b.age) && (a.genetics == b.genetics) {
 		bo = true 
 	}
 	return bo
