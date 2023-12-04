@@ -5,7 +5,6 @@ package main
 
 import (
 	"math/rand"
-	"math"
 	"fmt"
 )
 
@@ -30,9 +29,9 @@ func DoMate(population Population) [][]Individual {
 
 	//we then randomly select individuals within the female and male candidates 
 	n := Min(len(mateCandidateFemale), len(mateCandidateMale)) 
-	mateFreq := population.mateFreq * float64(n)
-	mateThreshold := population.mateThreshold
-	matePair := RandomSelection(mateCandidateFemale, mateCandidateMale, mateFreq, mateThreshold)
+	mateFreq := population.mateFreq
+	//randomly select female and male individuals and pair them together 
+	matePair := RandomSelection(mateCandidateFemale, mateCandidateMale, mateFreq, n)
 	return matePair
 
 }
@@ -40,7 +39,7 @@ func DoMate(population Population) [][]Individual {
 //RandomSelection take a sclice of female candidates and a slice of male candidates and the mate frequency
 //randomly pair them 
 //mate without replacement 
-func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFreq, mateThreshold float64) [][]Individual {
+func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFreq float64, n int) [][]Individual {
 	if len(mateCandidateFemale) == 0 || len(mateCandidateMale) == 0 {
 		fmt.Println(len(mateCandidateFemale), len(mateCandidateMale))
 		panic("No enough male/female individuals in this generation")
@@ -48,23 +47,29 @@ func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFr
 
 	var pairedIndividual [][]Individual
 
-	for i := 0; i < int(mateFreq); i++ {
-		//select an individual in male and an individual in female 
-		numFemale := len(mateCandidateFemale)
-		numMale := len(mateCandidateMale)
-		female := rand.Intn(numFemale)
-		male := rand.Intn(numMale)
+	for i := 0; i < n; i++ {
+		//check whther the female will mate or not 
+		randNum := rand.Float64()
+		if randNum < mateFreq { //the female will mate 
+			//select an individual in male and an individual in female 
+			numFemale := len(mateCandidateFemale)
+			numMale := len(mateCandidateMale)
+			female := rand.Intn(numFemale)
+			male := rand.Intn(numMale)
 
-		femaleIndividual := mateCandidateFemale[female]
-		maleIndividual := mateCandidateMale[male]
-		if Distance(femaleIndividual.position, maleIndividual.position) <= mateThreshold {
-			var newPair []Individual
-			newPair = append(newPair, femaleIndividual)
-			newPair = append(newPair, maleIndividual)
-			pairedIndividual = append(pairedIndividual, newPair)
-			mateCandidateFemale = Delete(mateCandidateFemale, femaleIndividual)
-			mateCandidateMale = Delete(mateCandidateMale, maleIndividual)
+			femaleIndividual := mateCandidateFemale[female]
+			maleIndividual := mateCandidateMale[male]
+			// we only allow individuals in the same grid to mate 
+			if femaleIndividual.grid == maleIndividual.grid { 
+				var newPair []Individual
+				newPair = append(newPair, femaleIndividual)
+				newPair = append(newPair, maleIndividual)
+				pairedIndividual = append(pairedIndividual, newPair)
+				mateCandidateFemale = Delete(mateCandidateFemale, femaleIndividual)
+				mateCandidateMale = Delete(mateCandidateMale, maleIndividual)
+			}
 		}
+		
 	}
 
 	if len(pairedIndividual) == 0 {
@@ -80,14 +85,6 @@ func Min(a, b int) int {
 	} else {
 		return b
 	}
-}
-
-//Distance takes two positions as input and returns the distance between these two positions
-func Distance(p1, p2 OrderedPair) float64 {
-	dX := p1.x - p2.x 
-	dY := p1.y - p2.y 
-	dist := math.Sqrt(dX*dX + dY*dY)
-	return dist 
 }
 
 //Delete takes an individualSlice and an individual variable as input and returns 
@@ -115,7 +112,7 @@ func Delete(indSclice []Individual, a Individual) []Individual {
 //variables are equal 
 func IsEqual(a, b Individual) bool {
 	bo := false 
-	if (a.position == b.position) && (a.sex == b.sex) && (a.age == b.age) && (a.genetics == b.genetics) {
+	if (a.position == b.position) && (a.sex == b.sex) && (a.age == b.age) && (a.genetics == b.genetics) && (a.grid == b.grid) {
 		bo = true 
 	}
 	return bo
