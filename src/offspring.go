@@ -13,7 +13,7 @@ import (
 //Combine all Individuals into a single slice []Individual. Randomly assign their genders, achieving the female proportion as population.femaleRate.
 //Finally, add all Individuals to Population.
 
-func DoOffspring(pairs [][]Individual, population Population) []Individual {
+func (population *Population)DoOffspring(pairs [][]Individual) []Individual {
 	var offspring []Individual
 
 	//update the offsprings of each mating pair 
