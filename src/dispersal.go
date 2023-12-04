@@ -154,13 +154,13 @@ func DoDispersal(land Landscape, offSpring []Individual, probmatrix [][]float64,
 	offcount := 0
 	free := land.K_env-len(pop.individuals)
 
-	freegrid := checkGrid(land, offSpring)
+	freegrid := CheckGrid(land, offSpring)
 	//  makes sure loop stops at carrying capacity (ie, total number of freegrids) or stops at end of offpsring list
 	for dispcount < free && offcount < len(offSpring) {
 
 		// visit every offspring
 		for i := range offSpring{
-			probarray := getProbArray(offSpring, i, probmatrix, freegrid)
+			probarray := GetProbArray(offSpring, i, probmatrix, freegrid)
 			if len(freegrid)!=0 {
 				targetGrid := w_choice(freegrid,probarray)
 				differentialmortality := DoSelection(offSpring[i],targetGrid,fitness)
@@ -179,7 +179,7 @@ func DoDispersal(land Landscape, offSpring []Individual, probmatrix [][]float64,
 
 				// update population
 				offSpring[i].gridIn = targetGrid
-				offSpring[i].position.x, offSpring[i].position.y = randomGridxy(targetGrid, land)
+				offSpring[i].position.x, offSpring[i].position.y = RandomGridxy(targetGrid, land)
 				pop.individuals = append(pop.individuals, offSpring[i])
 
 			} 
@@ -209,9 +209,9 @@ func RandomGridxy(target int, land Landscape) (float64,float64) {
 // We have different methods to do this conversion, include linear, nearest neighbor, random mixing and so on. (movement function)
 func CalProb(method string, cdmatrix [][]float64) [][]float64 {
 	
-	max := findMax(cdmatrix)
-	min := findMin(cdmatrix)
-	probMatrix := copyMatrix(cdmatrix)
+	max := FindMax(cdmatrix)
+	min := FindMin(cdmatrix)
+	probMatrix := CopyMatrix(cdmatrix)
 
 	if min < 0 || max < 0 {
 		panic("The cost distance cannot have value smaller than 0.")
