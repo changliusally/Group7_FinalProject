@@ -64,7 +64,7 @@ func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFr
 			femaleIndividual := mateCandidateFemale[female]
 			maleIndividual := mateCandidateMale[male]
 			// we only allow individuals in the same grid to mate 
-			if femaleIndividual.grid == maleIndividual.grid { 
+			if femaleIndividual.gridIn == maleIndividual.gridIn { 
 				var newPair []Individual
 				newPair = append(newPair, femaleIndividual)
 				newPair = append(newPair, maleIndividual)
@@ -116,7 +116,7 @@ func Delete(indSclice []Individual, a Individual) []Individual {
 //variables are equal 
 func IsEqual(a, b Individual) bool {
 	bo := false 
-	if (a.position == b.position) && (a.sex == b.sex) && (a.age == b.age) && (a.genetics == b.genetics) && (a.grid == b.grid) {
+	if (a.position == b.position) && (a.sex == b.sex) && (a.age == b.age) && (a.genetics == b.genetics) && (a.gridIn == b.gridIn) {
 		bo = true 
 	}
 	return bo
