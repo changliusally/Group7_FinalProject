@@ -17,7 +17,8 @@ type Individual struct {
 	sex      int //we set 0 to be male and 1 to be female
 	age      int
 	genetics int //we set 0 to be recessive and 1 to be dominant for a sigle allel
-	grid     int //which grid this individual is in
+	//gen int, might be useful in visualization
+	gridIn int //which grid this individual is in 
 }
 
 type Population struct {
@@ -32,11 +33,11 @@ type Population struct {
 
 type Grid struct {
 	position OrderedPair
-	label    int
+	label int 
 }
 
 type Landscape struct {
-	grid   [][]Grid
+	grid   []Grid
 	width  int
 	K_grid int //how many individuals that a grid could process at most
 	K_env  int // environmental carrying capacity
