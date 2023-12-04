@@ -7,8 +7,10 @@ import (
 	"time"
 )
 
-// adultDeath selects individuals for death based on the population's death rate, female rate, and genetics ratio
-func adultDeath(population Population, totalDeathCount int) Population {
+//AdultDeath takes the population and totalDeathCount as input and returns the population
+//with certain inividuals deleted. The selection of death individuals is based on the
+//population's death rate, female rate, and genetics ratio
+func AdultDeath(population Population, totalDeathCount int) Population {
 	rand.Seed(time.Now().UnixNano())
 
 	// Calculate the total number of deaths based on the population size and death rate.
@@ -21,7 +23,7 @@ func adultDeath(population Population, totalDeathCount int) Population {
 	// Calculate the number of males to die (total deaths minus female deaths).
 	maleDeathCount := totalDeathCount - femaleDeathCount
 
-	// Create a map to track the number of deaths for each genetic type (0, 1, 2) based on a 1:2:1 ratio.
+	//Create a map to track the number of deaths for each genetic type (0, 1, 2) based on a 1:2:1 ratio.
 	geneticsCounts := map[int]int{
 		0: totalDeathCount / 4,     // Genotype aa
 		1: totalDeathCount / 2,     // Genotype Aa
@@ -85,7 +87,7 @@ func contains(slice []int, element int) bool {
 
 
 //UpdateAge takes a population as input and update all individuals' age of this population 
-func UpdateAge(pop Population) {
+func (pop *Population)UpdateAge() {
 	for _, inid := range pop.individuals {
 		inid.age = inid.age + 1
 	}
