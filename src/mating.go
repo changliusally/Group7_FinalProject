@@ -12,7 +12,7 @@ import (
 //It takes the population and the number of generation as input and 
 //returns a slices of paired individuals couples that is within the appropriate distance 
 //and is mature 
-func DoMate(population Population) [][]Individual {
+func DoMate(population Population) ([][]Individual, int) {
 	//select individuals within appropriate age of a certain generation 
 	var mateCandidateFemale []Individual
 	var mateCandidateMale []Individual
@@ -32,7 +32,11 @@ func DoMate(population Population) [][]Individual {
 	mateFreq := population.mateFreq
 	//randomly select female and male individuals and pair them together 
 	matePair := RandomSelection(mateCandidateFemale, mateCandidateMale, mateFreq, n)
-	return matePair
+
+	//The total number of mating pairs 
+	numMatingPair := len(matePair)
+
+	return matePair, numMatingPair
 
 }
 
