@@ -38,6 +38,7 @@ func adultDeath(population Population, totalDeathCount int) Population {
 		individual := population.individuals[index]
 
 		// Skip if the individual is already selected for death.
+		//if contains(deadIndividuals, individual.id) || individual.age == 0 {
 		if contains(deadIndividuals, individual.id) {
 			continue
 		}
