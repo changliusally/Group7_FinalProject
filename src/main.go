@@ -3,31 +3,35 @@ package main
 import (
 	"runtime"
 	"time"
+	"os"
+	"fmt"
 )
 
 func main() {
 
 	// set up the timer
-	start_time = time.Now()
-	foldertime = start_time.strftime("%Y%m%d_%H%M%S")
+	start_time := time.Now()
+	foldertime := start_time.strftime("%Y%m%d_%H%M%S")
 
 	// read agv from command line
 	// the format: main.exe C:/.../inputfolder inputvars.csv output_folder
 
+	fmt.Println(os.Args[0])
+
 	// check the input folder
-	inputFolder, err1 := os.args[1]
+	inputFolder, err1 := os.Args[1]
 	if err1 != nil {
 		panic("Error: input folder not found")
 	}
 
 	// read inputvars.csv
-	inputFile, err2 := os.args[2]
+	inputFile, err2 := os.Args[2]
 	if err2 != nil {
 		panic("Error: inputvars.csv not found")
 	}
 
 	// check the output folder
-	output, err3 := os.args[3]
+	output, err3 := os.Args[3]
 	if err3 != nil {
 		panic("Error: output folder not found")
 	}
