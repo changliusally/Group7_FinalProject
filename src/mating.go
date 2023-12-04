@@ -5,7 +5,6 @@ package main
 
 import (
 	"math/rand"
-	"math"
 	"fmt"
 )
 
@@ -50,8 +49,8 @@ func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFr
 
 	for i := 0; i < n; i++ {
 		//check whther the female will mate or not 
-		rand := rand.Float64()
-		if rand < mateFreq { //the female will mate 
+		randNum := rand.Float64()
+		if randNum < mateFreq { //the female will mate 
 			//select an individual in male and an individual in female 
 			numFemale := len(mateCandidateFemale)
 			numMale := len(mateCandidateMale)
