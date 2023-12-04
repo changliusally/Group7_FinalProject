@@ -3,7 +3,6 @@ package main
 import (
 	"math"
 	"math/rand"
-	"time"
 )
 
 //DoOffspring generate offspring for pairs [][]individual.
@@ -14,8 +13,7 @@ import (
 //Combine all Individuals into a single slice []Individual. Randomly assign their genders, achieving the female proportion as population.femaleRate.
 //Finally, add all Individuals to Population.
 
-func DoOffspring(pairs [][]Individual, population Population, generation int) []Individual {
-	rand.Seed(time.Now().UnixNano())
+func (population *Population)DoOffspring(pairs [][]Individual) []Individual {
 	var offspring []Individual
 
 	//update the offsprings of each mating pair 
@@ -37,8 +35,6 @@ func DoOffspring(pairs [][]Individual, population Population, generation int) []
 			// decide genetic genotype based on the parents.
 			pairoffspring[i].genetics = generateGenetics(pair[0].genetics, pair[1].genetics)
 
-			// make the generation ++
-			pairoffspring[i].gen = generation + 1
 
 			// Randomly assign sex based on female rate
 			if rand.Float64() < population.femaleRate {
