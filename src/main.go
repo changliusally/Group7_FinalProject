@@ -52,17 +52,23 @@ func main() {
 	}
 	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0])
 
-	// begin Monte-Carlo Looping
-	MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model)
+	fmt.Println("Input file is read")
 
+	fmt.Println("Now, begin Monte-Carlo Looping")
+	// begin Monte-Carlo Looping
+	generations := MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model)
+
+	fmt.Println("Monte-Carlo Looping is complete")
 	// write the output file
+	WriteOutput(generations, outputYear, outdir)
+	fmt.println("Output file is written")
 
 	// darw the output figure
 
 }
 
 // Monte-Carlo Looping, run parallel
-func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, population Population, landscape Landscape, model Model) [][]Population {
+func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, population Population, landscape Landscape, model Model) [][]Generation {
 	// get the number of processors
 	numProcessors := runtime.NumCPU()
 

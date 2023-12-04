@@ -47,12 +47,21 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 
 	// first column is the filename of xyfile(individuals information)
 	xyfile := parameters[0]
-	xyParameters := Loadfile(xyfile, true)
-	if len(xyParameters) != 6 {
-		panic("Error: xyfile column number is not correct")
-	}
-	individuals := ReadXyfile(xyParameters)
-	population.individuals = individuals
+	random:=false
+	// check xyfile whether is a number or a filename
+	_, err := strconv.Atoi(xyfile)
+	if err == nil {
+		// xyfile is a number
+		random=true
+	} else {
+		// xyfile is a filename
+		xyParameters := Loadfile(xyfile, true)
+		if len(xyParameters) != 6 {
+			panic("Error: xyfile column number is not correct")
+		}
+		individuals := ReadXyfile(xyParameters)
+		population.individuals = individuals
+	} 
 
 	// second column is the int number of Monte-Carlo run
 	mcRun, err1 := strconv.Atoi(parameters[1])
@@ -77,8 +86,8 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 	if err3 != nil {
 		panic(err3)
 	}
-	if outputYear <= 0 {
-		panic("Error: output year is non-positive")
+	if outputYear < 0 {
+		panic("Error: output year is negative")
 	}
 
 	// fifth column is the filename of cdmatrix
@@ -176,6 +185,12 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 	}
 	landscape.width = width
 
+	if random==true{
+		// generate the individuals
+		individuals := RandomGenerateIndividuals(xyfile,landscape)
+		population.individuals = individuals
+	}
+
 	// fifteenth to seventeenth column is the float number of the fitness of genotype aa, Aa, AA
 	fitness := make([]float64, 3)
 	fitness_aa, err12 := strconv.ParseFloat(parameters[14], 64)
@@ -258,11 +273,45 @@ func ReadXyfile(individualData [][]string) []Individual {
 		}
 
 		// sixth column is the string of individual genetics
-		individuals[i].genetics = row[5]
+		genetics := row[5]
+		if genetics == "aa" {
+			individuals[i].genetics = 0
+		} else if genetics == "Aa" {
+			individuals[i].genetics = 1
+		} else if genetics == "AA" {
+			individuals[i].genetics = 2
+		} else {
+			panic("Error: genetics wrong")
+		}
 	}
 
 	return individuals
 }
+
+// random generate individuals
+// output: a slice of individuals
+func RandomGenerateIndividuals(num int, Landscape) []Individual {
+	// initialize the individuals
+	var individuals []Individual
+
+	// generate the position, age, sex ,id, genetics for every individual
+	for i := 0; i < num; i++ {
+		inidividuals[i] = Individual{}
+		individuals[i].age = rand.Intn(4)	//0,1,2,3
+		individual[i].sex = rand.Intn(2)	//0,1
+		individual[i].id = i
+		individual[i].genetics = rand.Intn(3)	//0,1,2
+		// rand position
+		
+	}
+
+	return individuals
+}
+
+		
+
+
+
 
 // read cdmatrix
 // input: a slice of slice of string
@@ -283,4 +332,77 @@ func ReadCdmatrix(records [][]string) [][]float64 {
 	}
 
 	return matrix
+}
+
+// write output to csv
+// input: a slice of slice of generation, a int number of output year, a string of output directory
+func WriteOutput(generations [][]Generation, outputYear int, outdir string) {
+	// make output directory
+	err := os.MkdirAll(outdir, 0777)
+	if err != nil {
+		panic(err)
+	}
+
+	// make every monte carlo run directory
+	for i := 0; i < len(generations); i++ {
+		err := os.MkdirAll(outdir+"/mc"+strconv.Itoa(i), 0777)
+		if err != nil {
+			panic(err)
+		}
+		// write every generation to csv
+		for j := 0; j < len(generations[i]); j++ {
+			// if outputyear is 0, then output every generation
+			if outputYear == 0 {
+				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(j) + ".csv"
+				WriteCsv(generations[i][j].individuals, filename)
+			}
+			if j == outputYear {
+				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(j) + ".csv"
+				WriteCsv(generations[i][j].individuals, filename)
+			}
+		}
+
+	}
+
+}
+
+// write csv
+// input: a slice of Individual, a string of filename
+func WriteCsv(individuals []Individual, filename string) {
+	// header: XCOORD,YCOORD,ID,age,sex,genetics,gridIn
+	// open the csv file
+	file, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// the csv writer use "," as the default delimiter
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// write the header
+	header := []string{"XCOORD", "YCOORD", "ID", "age", "sex", "genetics", "gridIn"}
+	err1 := writer.Write(header)
+	if err1 != nil {
+		panic(err1)
+	}
+
+	// write the data
+	for _, individual := range individuals {
+		record := []string{
+			strconv.Itoa(ind.position.x),
+			strconv.Itoa(ind.position.y),
+			strconv.Itoa(ind.id),
+			strconv.Itoa(ind.age),
+			strconv.Itoa(ind.sex),
+			strconv.Itoa(ind.genetics),
+			strconv.Itoa(ind.gridIn),
+		}
+		err2 := writer.Write(record)
+		if err2 != nil {
+			panic(err2)
+		}
+	}
+
 }
