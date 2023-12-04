@@ -152,10 +152,11 @@ func DoEmigration(land Landscape, offSpring []Individual, probmatrix [][]float64
 	
 	dispcount := 0
 	offcount := 0
+	free := land.K_env-len(pop.individuals)
 
 	freegrid := checkGrid(land, offSpring)
 	//  makes sure loop stops at carrying capacity (ie, total number of freegrids) or stops at end of offpsring list
-	for dispcount < len(freegrid) && offcount < len(offSpring) {
+	for dispcount < free && offcount < len(offSpring) {
 
 		// visit every offspring
 		for i := range offSpring{
