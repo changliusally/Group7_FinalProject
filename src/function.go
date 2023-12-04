@@ -176,6 +176,9 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 	}
 	landscape.width = width
 
+	landGrid := InitializeLand(landscape.width)
+	landscape.grid = landGrid
+
 	// fifteenth to seventeenth column is the float number of the fitness of genotype aa, Aa, AA
 	fitness := make([]float64, 3)
 	fitness_aa, err12 := strconv.ParseFloat(parameters[14], 64)
