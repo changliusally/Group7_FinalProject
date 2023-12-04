@@ -17,7 +17,6 @@ type Individual struct {
 	sex      int //we set 0 to be male and 1 to be female
 	age      int
 	genetics int //we set 0 to be recessive and 1 to be dominant for a sigle allel
-	gen      int
 	grid     int //which grid this individual is in
 }
 
