@@ -185,6 +185,9 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 	}
 	landscape.width = width
 
+	landGrid := InitializeLand(landscape.width)
+	landscape.grid = landGrid
+
 	if random==true{
 		// generate the individuals
 		individuals := RandomGenerateIndividuals(xyfile,landscape)
