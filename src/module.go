@@ -36,7 +36,8 @@ func AdultDeath(population Population, totalDeathCount int) Population {
 
 	// Continue selecting individuals for death until the required numbers are reached for each sex and genetic type.
 	for maleDeathCount > 0 || femaleDeathCount > 0 {
-		index := rand.Intn(len(population.individuals))
+		totalIndividual := len(population.individuals)
+		index := rand.Intn(totalIndividual)
 		individual := population.individuals[index]
 
 		// Skip if the individual is already selected for death.
