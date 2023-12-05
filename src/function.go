@@ -50,7 +50,7 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 	xyfile := parameters[0]
 	random := false
 	// check xyfile whether is a number or a filename
-	_, err := strconv.Atoi(xyfile)
+	xyVal, err := strconv.Atoi(xyfile)
 	if err == nil {
 		// xyfile is a number
 		random = true
@@ -191,7 +191,7 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 
 	if random == true {
 		// generate the individuals
-		individuals := RandomGenerateIndividuals(xyfile, landscape)
+		individuals := RandomGenerateIndividuals(xyVal, landscape)
 		population.individuals = individuals
 	}
 
@@ -231,50 +231,61 @@ func ReadXyfile(individualData [][]string) []Individual {
 		// initialize the individual
 		individuals[i] = Individual{}
 
+		// initialize the position
+		var position OrderedPair
+
 		// first column is the int number of X coordinate
-		individuals[i].position.x, err1 = strconv.Atoi(row[0])
+		x, err1 := strconv.Atoi(row[0])
 		if err1 != nil {
 			panic(err1)
 		}
-		if individuals[i].position.x < 0 {
+		if x < 0 {
 			panic("Error: X coordinate is negative")
 		}
+		position.x = x
+		Individual[i].position.x = position.x
 
 		// second column is the int number of Y coordinate
-		individuals[i].position.y, err2 = strconv.Atoi(row[1])
+		y, err2 := strconv.Atoi(row[1])
 		if err2 != nil {
 			panic(err2)
 		}
-		if individuals[i].position.y < 0 {
+		if y < 0 {
 			panic("Error: Y coordinate is negative")
 		}
+		position.y = y
+		Individual[i].position.y = position.y
 
 		// third column is the int number of the individual id
-		individuals[i].id, err3 = strconv.Atoi(row[2])
+		id, err3 := strconv.Atoi(row[2])
 		if err3 != nil {
 			panic(err3)
 		}
-		if individuals[i].id < 0 {
+		if id < 0 {
 			panic("Error: individual id is negative")
 		}
+		individuals[i].id = id
 
 		// fourth column is the int number of the individual age
-		individuals[i].age, err4 = strconv.Atoi(row[3])
+		age, err4 := strconv.Atoi(row[3])
 		if err4 != nil {
 			panic(err4)
 		}
-		if individuals[i].age < 0 {
+		if age < 0 {
 			panic("Error: individual age is negative")
 		}
+		individuals[i].age = age
 
 		// fifth column is the int number of individual sex
-		individuals[i].sex, err5 = strconv.Atoi(row[4])
+		sex, err5 := strconv.Atoi(row[4])
 		if err5 != nil {
 			panic(err5)
 		}
-		if individual[i].sex != 0 || individual.sex[i] != 1 {
+		if sex != 0 || sex != 1 {
 			panic("Error: sex wrong")
 		}
+
+		individuals[i].sex = sex
 
 		// sixth column is the string of individual genetics
 		genetics := row[5]
