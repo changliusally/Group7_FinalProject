@@ -60,6 +60,7 @@ func main() {
 
 	// darw the output figure
 
+
 }
 
 // Monte-Carlo Looping, run parallel
@@ -133,16 +134,20 @@ func UpdateGeneration(currentPopulation Population, landscape Landscape, model M
 	// update the population
 	// find the mating pairs for this generation and the total number of new born individuals in this generation
 	matingPair, numNewBorn := DoMate(newPopulation)
-	fmt.Println("mating finish")
+	//fmt.Println("mating finish")
 	newBornIndividuals := newPopulation.DoOffspring(matingPair)
-	fmt.Println("offspring finish")
+	//fmt.Println("offspring finish")
 	//covert cd matrix to probability matrix
 	probMatrix := CalProb(method, cdmat)
 	deathCount := newPopulation.DoDispersal(landscape, newBornIndividuals, probMatrix)
-	fmt.Println("disperse finish")
-	newPopulation.AdultDeath(numNewBorn - deathCount)
-	fmt.Println("mortility finish")
+	//fmt.Println("disperse finish")
+	deathCountNew := 2*numNewBorn - deathCount
+	newPopulation.AdultDeath(deathCountNew)
+	//fmt.Println("mortility finish")
 	newPopulation.UpdateAge()
+	//newPopulation.UpdateGrid(landscape)
+	//newIndividual := FindGrid(landscape, newPopulation.individuals)
+	//newPopulation.individuals = newIndividual
 
 	return newPopulation
 
