@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 )
@@ -47,12 +48,12 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 
 	// first column is the filename of xyfile(individuals information)
 	xyfile := parameters[0]
-	random:=false
+	random := false
 	// check xyfile whether is a number or a filename
 	_, err := strconv.Atoi(xyfile)
 	if err == nil {
 		// xyfile is a number
-		random=true
+		random = true
 	} else {
 		// xyfile is a filename
 		xyParameters := Loadfile(xyfile, true)
@@ -61,7 +62,7 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 		}
 		individuals := ReadXyfile(xyParameters)
 		population.individuals = individuals
-	} 
+	}
 
 	// second column is the int number of Monte-Carlo run
 	mcRun, err1 := strconv.Atoi(parameters[1])
@@ -188,9 +189,9 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 	landGrid := InitializeLand(landscape.width)
 	landscape.grid = landGrid
 
-	if random==true{
+	if random == true {
 		// generate the individuals
-		individuals := RandomGenerateIndividuals(xyfile,landscape)
+		individuals := RandomGenerateIndividuals(xyfile, landscape)
 		population.individuals = individuals
 	}
 
@@ -293,28 +294,23 @@ func ReadXyfile(individualData [][]string) []Individual {
 
 // random generate individuals
 // output: a slice of individuals
-func RandomGenerateIndividuals(num int, Landscape) []Individual {
+func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 	// initialize the individuals
 	var individuals []Individual
 
 	// generate the position, age, sex ,id, genetics for every individual
 	for i := 0; i < num; i++ {
 		inidividuals[i] = Individual{}
-		individuals[i].age = rand.Intn(4)	//0,1,2,3
-		individual[i].sex = rand.Intn(2)	//0,1
+		individuals[i].age = rand.Intn(4) //0,1,2,3
+		individual[i].sex = rand.Intn(2)  //0,1
 		individual[i].id = i
-		individual[i].genetics = rand.Intn(3)	//0,1,2
+		individual[i].genetics = rand.Intn(3) //0,1,2
 		// rand position
-		
+
 	}
 
 	return individuals
 }
-
-		
-
-
-
 
 // read cdmatrix
 // input: a slice of slice of string
