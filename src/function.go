@@ -193,6 +193,9 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 		// generate the individuals
 		individuals := RandomGenerateIndividuals(xyVal, landscape)
 		population.individuals = individuals
+	} else {
+		individuals.gridIn = FindGrid(landscape, individuals.position)
+		population.individuals = individuals
 	}
 
 	// fifteenth to seventeenth column is the float number of the fitness of genotype aa, Aa, AA
@@ -313,7 +316,7 @@ func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 	for i := 0; i < num; i++ {
 		individuals[i] = Individual{}
 		individuals[i].age = rand.Intn(4) //0,1,2,3
-		individuals[i].sex = rand.Intn(2)  //0,1
+		individuals[i].sex = rand.Intn(2) //0,1
 		individuals[i].id = i
 		individuals[i].genetics = rand.Intn(3) //0,1,2
 		// rand position
@@ -357,24 +360,23 @@ func WriteOutput(generations []Generation, outputYear int, outdir string) {
 
 	// make every monte carlo run directory
 	for i := 0; i < len(generations); i++ {
-			err := os.MkdirAll(outdir+"/mc"+strconv.Itoa(i), 0777)
-			if err != nil {
-				panic(err)
+		err := os.MkdirAll(outdir+"/mc"+strconv.Itoa(i), 0777)
+		if err != nil {
+			panic(err)
+		}
+		// write every generation to csv
+		for m := 0; m < len(generations[i].population); m++ {
+			// if outputyear is 0, then output every generation
+			if outputYear == 0 {
+				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
+				WriteCsv(generations[i].population[m].individuals, filename)
 			}
-			// write every generation to csv
-			for m := 0; m < len(generations[i].population); m++ {
-				// if outputyear is 0, then output every generation
-				if outputYear == 0 {
-					filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
-					WriteCsv(generations[i].population[m].individuals, filename)
-				}
-				if m == outputYear {
-					filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
-					WriteCsv(generations[i].population[m].individuals, filename)
-				}
+			if m == outputYear {
+				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
+				WriteCsv(generations[i].population[m].individuals, filename)
 			}
-		
-		
+		}
+
 	}
 
 }
