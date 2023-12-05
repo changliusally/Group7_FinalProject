@@ -12,6 +12,7 @@ import (
 // input: a csv file
 // output: a slice of slice of string recording the data
 func Loadfile(filename string, header bool) [][]string {
+	
 	// Open the file
 	file, err := os.Open(filename) //
 	if err != nil {
@@ -42,9 +43,11 @@ func Loadfile(filename string, header bool) [][]string {
 
 // read parameters from input file
 // input: a slice of string
-func ReadInputParameters(parameters []string) (Population, Landscape, Model, int, int, int, [][]float64) {
+func ReadInputParameters(parameters []string,datadir string) (Population, Landscape, Model, int, int, int, [][]float64) {
 	// initialize the population
 	var population Population
+
+	var individuals []Individual
 
 	// first column is the filename of xyfile(individuals information)
 	xyfile := parameters[0]
@@ -56,14 +59,18 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 		random = true
 	} else {
 		// xyfile is a filename
-		xyParameters := Loadfile(xyfile, true)
-		if len(xyParameters) != 6 {
+		xyFile := datadir+xyfile
+		xyParameters := Loadfile(xyFile, true)
+		if len(xyParameters[0]) != 6 {
 			panic("Error: xyfile column number is not correct")
 		}
-		individuals := ReadXyfile(xyParameters)
+		individuals = ReadXyfile(xyParameters)
+		//fmt.Println("before", individuals)
 		population.individuals = individuals
+		//fmt.Println("after", population.individuals)
 	}
 
+	//fmt.Println("hello0", individuals)
 	// second column is the int number of Monte-Carlo run
 	mcRun, err1 := strconv.Atoi(parameters[1])
 	if err1 != nil {
@@ -93,8 +100,10 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 
 	// fifth column is the filename of cdmatrix
 	cdmatrix := parameters[4]
-	cdmatData := Loadfile(cdmatrix, true)
+	cdPath:=datadir+cdmatrix
+	cdmatData := Loadfile(cdPath, false)
 	if cdmatData[0][0] != "0" { // check if the first column is 0
+		//fmt.Println(cdmatData[0][0])
 		panic("Error: cdmatrix first column is not 0")
 	}
 	cdmat := ReadCdmatrix(cdmatData)
@@ -189,13 +198,18 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 	landGrid := InitializeLand(landscape.width)
 	landscape.grid = landGrid
 
+
+
 	if random == true {
 		// generate the individuals
-		individuals := RandomGenerateIndividuals(xyVal, landscape)
+		individuals = RandomGenerateIndividuals(xyVal, landscape)
 		population.individuals = individuals
 	} else {
-		individuals.gridIn = FindGrid(landscape, individuals.position)
+		//fmt.Println("hello1", individuals)
+		individuals = FindGrid(landscape, individuals)
+		//fmt.Println("hello2", individuals)
 		population.individuals = individuals
+		//fmt.Println("population", population.individuals)
 	}
 
 	// fifteenth to seventeenth column is the float number of the fitness of genotype aa, Aa, AA
@@ -220,6 +234,7 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 	}
 	population.fitness = fitness
 
+
 	return population, landscape, model, mcRun, looptime, outputYear, cdmat
 }
 
@@ -228,11 +243,14 @@ func ReadInputParameters(parameters []string) (Population, Landscape, Model, int
 // output: a slice of individuals
 func ReadXyfile(individualData [][]string) []Individual {
 	// initialize the individuals
-	var individuals []Individual
+	individuals:=make([]Individual,len(individualData))
+	fmt.Println(individualData)
 
-	for i, row := range individualData {
+	for i := range individualData {
+		row:=individualData[i]
+	
 		// initialize the individual
-		individuals[i] = Individual{}
+		var individual Individual
 
 		// initialize the position
 		var position OrderedPair
@@ -246,7 +264,7 @@ func ReadXyfile(individualData [][]string) []Individual {
 			panic("Error: X coordinate is negative")
 		}
 		position.x = x
-		individuals[i].position.x = position.x
+		individual.position.x = position.x
 
 		// second column is the int number of Y coordinate
 		y, err2 := strconv.ParseFloat(row[1], 64)
@@ -257,7 +275,7 @@ func ReadXyfile(individualData [][]string) []Individual {
 			panic("Error: Y coordinate is negative")
 		}
 		position.y = y
-		individuals[i].position.y = position.y
+		individual.position.y = position.y
 
 		// third column is the int number of the individual id
 		id, err3 := strconv.Atoi(row[2])
@@ -267,7 +285,7 @@ func ReadXyfile(individualData [][]string) []Individual {
 		if id < 0 {
 			panic("Error: individual id is negative")
 		}
-		individuals[i].id = id
+		individual.id = id
 
 		// fourth column is the int number of the individual age
 		age, err4 := strconv.Atoi(row[3])
@@ -277,30 +295,32 @@ func ReadXyfile(individualData [][]string) []Individual {
 		if age < 0 {
 			panic("Error: individual age is negative")
 		}
-		individuals[i].age = age
+		individual.age = age
 
 		// fifth column is the int number of individual sex
 		sex, err5 := strconv.Atoi(row[4])
 		if err5 != nil {
 			panic(err5)
 		}
-		if sex != 0 || sex != 1 {
+		if sex != 0 && sex != 1 {
 			panic("Error: sex wrong")
 		}
 
-		individuals[i].sex = sex
+		individual.sex = sex
 
 		// sixth column is the string of individual genetics
 		genetics := row[5]
 		if genetics == "aa" {
-			individuals[i].genetics = 0
+			individual.genetics = 0
 		} else if genetics == "Aa" {
-			individuals[i].genetics = 1
+			individual.genetics = 1
 		} else if genetics == "AA" {
-			individuals[i].genetics = 2
+			individual.genetics = 2
 		} else {
 			panic("Error: genetics wrong")
 		}
+
+		individuals[i]=individual
 	}
 
 	return individuals
@@ -425,58 +445,64 @@ func WriteCsv(individuals []Individual, filename string) {
 //FindGrid takes a lanscape and a orderedpair as input and returns 
 //a integer that represents the grid number of this individual whose 
 //position is this orderedpair 
-func FindGrid(landscape Landscape, position OrderedPair) int {
+func  FindGrid(landscape Landscape, individuals []Individual) []Individual {
 	width := landscape.width 
 
-	//check if the position is valid
-	if position.x > float64(width) || position.x < 0 {
-		panic("Invalid x coordinate")
-	}
-	if position.y > float64(width) || position.y < 0 {
-		panic("Invalid y coordinate")
-	}
+	for i := range individuals {
+		position := individuals[i].position
+		//check if the position is valid
+		if position.x > float64(width) || position.x < 0 {
+			panic("Invalid x coordinate")
+		}
+		if position.y > float64(width) || position.y < 0 {
+			panic("Invalid y coordinate")
+		}
 
-	//find the grid number
-	if position.x >= 0.0 && position.x < float64(width)/4.0 {
-		if position.y >= 0.0 && position.y < float64(width)/4.0 {
-			return 0
-		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-			return 4
-		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-			return 8
+		//find the grid number
+		if position.x >= 0.0 && position.x < float64(width)/4.0 {
+			if position.y >= 0.0 && position.y < float64(width)/4.0 {
+				individuals[i].gridIn = 0
+			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+				individuals[i].gridIn = 4
+			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+				individuals[i].gridIn = 8
+			} else {
+				individuals[i].gridIn =12
+			}
+		} else if position.x >= float64(width)/4.0 && position.x < float64(width)/2.0 {
+			if position.y >= 0 && position.y < float64(width)/4.0 {
+				individuals[i].gridIn = 1
+			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+				individuals[i].gridIn = 5
+			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+				individuals[i].gridIn = 9
+			} else {
+				individuals[i].gridIn = 13
+			}
+		} else if position.x >= float64(width)/2.0 && position.x < float64(3*width)/4.0 {
+			if position.y >= 0 && position.y < float64(width)/4.0 {
+				individuals[i].gridIn = 2
+			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+				individuals[i].gridIn = 6
+			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+				individuals[i].gridIn = 10
+			} else {
+				individuals[i].gridIn = 14
+			}
 		} else {
-			return 12
+			if position.y >= 0 && position.y < float64(width)/4.0 {
+				individuals[i].gridIn = 3
+			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+				individuals[i].gridIn = 7
+			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+				individuals[i].gridIn = 11
+			} else {
+				individuals[i].gridIn = 15
+			}
 		}
-	} else if position.x >= float64(width)/4.0 && position.x < float64(width)/2.0 {
-		if position.y >= 0 && position.y < float64(width)/4.0 {
-			return 1
-		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-			return 5
-		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-			return 9
-		} else {
-			return 13
-		}
-	} else if position.x >= float64(width)/2.0 && position.x < float64(3*width)/4.0 {
-		if position.y >= 0 && position.y < float64(width)/4.0 {
-			return 2
-		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-			return 6
-		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-			return 10
-		} else {
-			return 14
-		}
-	} else {
-		if position.y >= 0 && position.y < float64(width)/4.0 {
-			return 3
-		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-			return 7
-		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-			return 11
-		} else {
-			return 15
-		}
+
 	}
+	return individuals
+	
 
 }
