@@ -13,7 +13,7 @@ import (
 
 // DoDispersal is a function than do dispersal of offsprings, and removed the redundant offspring when there is no available free grid for them to disperse.
 // It will traverse the list of offspring and allocate free grid for it to disperse, and return the death number of offsprings.
-func DoDispersal(land Landscape, offSpring []Individual, probmatrix [][]float64, fitness []float64, pop Population) int{
+func (pop *Population)DoDispersal(land Landscape, offSpring []Individual, probmatrix [][]float64) int{
 	
 	dispcount := 0
 	offcount := 0
@@ -28,7 +28,7 @@ func DoDispersal(land Landscape, offSpring []Individual, probmatrix [][]float64,
 			probarray := GetProbArray(offSpring, i, probmatrix, freegrid)
 			if len(freegrid)!=0 {
 				targetGrid := w_choice(freegrid,probarray)
-				differentialmortality := DoSelection(offSpring[i],targetGrid,fitness)
+				differentialmortality := DoSelection(offSpring[i],targetGrid,pop.fitness)
 
 				differentialmortality_Total := 1 - ((1 - differentialmortality) * (1 - pop.deathRate))
 				
