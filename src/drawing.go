@@ -7,17 +7,6 @@ import (
 	"math"
 )
 
-type Canvas struct {
-	gc     *draw2dimg.GraphicContext
-	img    image.Image
-	width  int // both width and height are in pixels
-	height int
-}
-
-func (c *Canvas) GetImage() image.Image {
-	return c.img
-}
-
 // function DrawPopulation
 func DrawPopulation(population Population, landscape Landscape) Canvas {
 	canvasWidth := landscape.width
