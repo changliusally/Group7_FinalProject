@@ -29,8 +29,9 @@ func main() {
 
 	var fileans string 
 	var outdir string 
+	var datadir string
 	if len(os.Args) >= 4 {
-		datadir := inputFolder + string('/')
+		datadir = inputFolder + string('/')
 		fileans = datadir + inputFile
 		outdir = datadir + output + foldertime + string('/')
 	} else {
@@ -39,10 +40,10 @@ func main() {
 
 	// read in the input file
 	inputvars := Loadfile(fileans, true)
-	if len(inputvars) != 17 {
+	if len(inputvars[0]) != 17 {
 		panic("Error: inputvars.csv's column number is not correct")
 	}
-	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0])
+	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0],datadir)
 
 	fmt.Println("Input file is read")
 	var method string
@@ -132,11 +133,15 @@ func UpdateGeneration(currentPopulation Population, landscape Landscape, model M
 	// update the population
 	// find the mating pairs for this generation and the total number of new born individuals in this generation
 	matingPair, numNewBorn := DoMate(newPopulation)
+	fmt.Println("mating finish")
 	newBornIndividuals := newPopulation.DoOffspring(matingPair)
+	fmt.Println("offspring finish")
 	//covert cd matrix to probability matrix
 	probMatrix := CalProb(method, cdmat)
 	deathCount := newPopulation.DoDispersal(landscape, newBornIndividuals, probMatrix)
+	fmt.Println("disperse finish")
 	newPopulation.AdultDeath(numNewBorn - deathCount)
+	fmt.Println("mortility finish")
 	newPopulation.UpdateAge()
 
 	return newPopulation
