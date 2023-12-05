@@ -21,18 +21,18 @@ func (population *Population)DoOffspring(pairs [][]Individual) []Individual {
 		// Determine the number of offspring
 		numOffspring := population.fecundity
 		//create a slice of Individuals representing the offsprings of this mating couple 
-		var pairoffspring []Individual 
+		pairoffspring := make([]Individual, numOffspring)
 
 		//update each offspring 
 		for i := 0; i < numOffspring; i++ {
 			// Create new offspring
-			pairoffspring[i].age = 0
+			pairoffspring[i].age = 0 
 
 			// Inherits mother's position
 			pairoffspring[i].position.x = pair[0].position.x
 			pairoffspring[i].position.y = pair[0].position.y
 
-			pairoffspring[i].grid = pair[0].grid
+			pairoffspring[i].gridIn = pair[0].gridIn 
 
 			// decide genetic genotype based on the parents.
 			pairoffspring[i].genetics = generateGenetics(pair[0].genetics, pair[1].genetics)
