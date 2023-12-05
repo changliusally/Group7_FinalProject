@@ -76,7 +76,7 @@ func InitializeLand(width int) []Grid {
 			grid.position.y = float64((i/4)*(width/4))
 		} else{ //if index % 4 == 0 
 			grid.position.x = float64(3*(width/4))
-			grid.position.y = float64((i/4-1)*(width/4))
+			grid.position.y = float64((i/4)*(width/4))
 		}
 
 		landGrid = append(landGrid, grid)
