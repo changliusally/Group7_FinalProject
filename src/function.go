@@ -235,7 +235,7 @@ func ReadXyfile(individualData [][]string) []Individual {
 		var position OrderedPair
 
 		// first column is the int number of X coordinate
-		x, err1 := strconv.Atoi(row[0])
+		x, err1 := strconv.ParseFloat(row[0], 64)
 		if err1 != nil {
 			panic(err1)
 		}
@@ -243,10 +243,10 @@ func ReadXyfile(individualData [][]string) []Individual {
 			panic("Error: X coordinate is negative")
 		}
 		position.x = x
-		Individual[i].position.x = position.x
+		individuals[i].position.x = position.x
 
 		// second column is the int number of Y coordinate
-		y, err2 := strconv.Atoi(row[1])
+		y, err2 := strconv.ParseFloat(row[1], 64)
 		if err2 != nil {
 			panic(err2)
 		}
@@ -254,7 +254,7 @@ func ReadXyfile(individualData [][]string) []Individual {
 			panic("Error: Y coordinate is negative")
 		}
 		position.y = y
-		Individual[i].position.y = position.y
+		individuals[i].position.y = position.y
 
 		// third column is the int number of the individual id
 		id, err3 := strconv.Atoi(row[2])
@@ -311,12 +311,14 @@ func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 
 	// generate the position, age, sex ,id, genetics for every individual
 	for i := 0; i < num; i++ {
-		inidividuals[i] = Individual{}
+		individuals[i] = Individual{}
 		individuals[i].age = rand.Intn(4) //0,1,2,3
-		individual[i].sex = rand.Intn(2)  //0,1
-		individual[i].id = i
-		individual[i].genetics = rand.Intn(3) //0,1,2
+		individuals[i].sex = rand.Intn(2)  //0,1
+		individuals[i].id = i
+		individuals[i].genetics = rand.Intn(3) //0,1,2
 		// rand position
+		individuals[i].gridIn = rand.Intn(16)
+		individuals[i].position.x, individuals[i].position.y = RandomGridxy(individuals[i].gridIn, landscape)
 
 	}
 
@@ -334,7 +336,7 @@ func ReadCdmatrix(records [][]string) [][]float64 {
 		for _, cell := range row {
 			value, err := strconv.ParseFloat(cell, 64)
 			if err != nil {
-				return nil, err
+				panic(err)
 			}
 			floatRow = append(floatRow, value)
 		}
@@ -346,7 +348,7 @@ func ReadCdmatrix(records [][]string) [][]float64 {
 
 // write output to csv
 // input: a slice of slice of generation, a int number of output year, a string of output directory
-func WriteOutput(generations [][]Generation, outputYear int, outdir string) {
+func WriteOutput(generations []Generation, outputYear int, outdir string) {
 	// make output directory
 	err := os.MkdirAll(outdir, 0777)
 	if err != nil {
@@ -355,23 +357,24 @@ func WriteOutput(generations [][]Generation, outputYear int, outdir string) {
 
 	// make every monte carlo run directory
 	for i := 0; i < len(generations); i++ {
-		err := os.MkdirAll(outdir+"/mc"+strconv.Itoa(i), 0777)
-		if err != nil {
-			panic(err)
-		}
-		// write every generation to csv
-		for j := 0; j < len(generations[i]); j++ {
-			// if outputyear is 0, then output every generation
-			if outputYear == 0 {
-				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(j) + ".csv"
-				WriteCsv(generations[i][j].individuals, filename)
+			err := os.MkdirAll(outdir+"/mc"+strconv.Itoa(i), 0777)
+			if err != nil {
+				panic(err)
 			}
-			if j == outputYear {
-				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(j) + ".csv"
-				WriteCsv(generations[i][j].individuals, filename)
+			// write every generation to csv
+			for m := 0; m < len(generations[i].population); m++ {
+				// if outputyear is 0, then output every generation
+				if outputYear == 0 {
+					filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
+					WriteCsv(generations[i].population[m].individuals, filename)
+				}
+				if m == outputYear {
+					filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
+					WriteCsv(generations[i].population[m].individuals, filename)
+				}
 			}
-		}
-
+		
+		
 	}
 
 }
@@ -399,10 +402,10 @@ func WriteCsv(individuals []Individual, filename string) {
 	}
 
 	// write the data
-	for _, individual := range individuals {
+	for _, ind := range individuals {
 		record := []string{
-			strconv.Itoa(ind.position.x),
-			strconv.Itoa(ind.position.y),
+			strconv.FormatFloat(ind.position.x, 'f', 2, 64),
+			strconv.FormatFloat(ind.position.y, 'f', 2, 64),
 			strconv.Itoa(ind.id),
 			strconv.Itoa(ind.age),
 			strconv.Itoa(ind.sex),
