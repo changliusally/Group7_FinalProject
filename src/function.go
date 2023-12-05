@@ -421,3 +421,62 @@ func WriteCsv(individuals []Individual, filename string) {
 	}
 
 }
+
+//FindGrid takes a lanscape and a orderedpair as input and returns 
+//a integer that represents the grid number of this individual whose 
+//position is this orderedpair 
+func FindGrid(landscape Landscape, position OrderedPair) int {
+	width := landscape.width 
+
+	//check if the position is valid
+	if position.x > float64(width) || position.x < 0 {
+		panic("Invalid x coordinate")
+	}
+	if position.y > float64(width) || position.y < 0 {
+		panic("Invalid y coordinate")
+	}
+
+	//find the grid number
+	if position.x >= 0.0 && position.x < float64(width)/4.0 {
+		if position.y >= 0.0 && position.y < float64(width)/4.0 {
+			return 0
+		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+			return 4
+		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+			return 8
+		} else {
+			return 12
+		}
+	} else if position.x >= float64(width)/4.0 && position.x < float64(width)/2.0 {
+		if position.y >= 0 && position.y < float64(width)/4.0 {
+			return 1
+		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+			return 5
+		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+			return 9
+		} else {
+			return 13
+		}
+	} else if position.x >= float64(width)/2.0 && position.x < float64(3*width)/4.0 {
+		if position.y >= 0 && position.y < float64(width)/4.0 {
+			return 2
+		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+			return 6
+		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+			return 10
+		} else {
+			return 14
+		}
+	} else {
+		if position.y >= 0 && position.y < float64(width)/4.0 {
+			return 3
+		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+			return 7
+		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+			return 11
+		} else {
+			return 15
+		}
+	}
+
+}
