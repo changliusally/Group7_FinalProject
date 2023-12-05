@@ -56,9 +56,6 @@ func main() {
 	var method string
 	method = "linear"
 
-	// begin Monte-Carlo Looping
-	MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model, method)
-
 	fmt.Println("Now, begin Monte-Carlo Looping")
 	// begin Monte-Carlo Looping
 	generations := MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model)
@@ -73,7 +70,7 @@ func main() {
 }
 
 // Monte-Carlo Looping, run parallel
-func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, population Population, landscape Landscape, model Model, method string) [][]Generation {
+func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, population Population, landscape Landscape, model Model, method string) []Generation {
 	// get the number of processors
 	numProcessors := runtime.NumCPU()
 
@@ -82,7 +79,7 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 		numProcessors = mcRun
 	}
 	n := mcRun / numProcessors
-	monteResult := make([][]Generation, 0)
+	monteResult := make([]Generation, 0)
 
 	output := make(chan []Generation, numProcessors)
 
@@ -98,7 +95,7 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 
 	// get the output
 	for i := 0; i < numProcessors; i++ {
-		MonteResult[i] = append(MonteResult[i], <-output...)
+		MonteResult = append(MonteResult, <-output...)
 	}
 
 	return MonteResult
