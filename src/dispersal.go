@@ -50,6 +50,7 @@ func (pop *Population)DoDispersal(land Landscape, offSpring []Individual, probma
 			} 
 		}
 	}
+
 	deathcount := offcount - dispcount
 	return deathcount
 	
