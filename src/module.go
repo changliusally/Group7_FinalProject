@@ -10,7 +10,7 @@ import (
 //AdultDeath takes the population and totalDeathCount as input and returns the population
 //with certain inividuals deleted. The selection of death individuals is based on the
 //population's death rate, female rate, and genetics ratio
-func AdultDeath(population Population, totalDeathCount int) Population {
+func (population *Population) AdultDeath(totalDeathCount int) {
 	rand.Seed(time.Now().UnixNano())
 
 	// Calculate the total number of deaths based on the population size and death rate.
@@ -71,8 +71,6 @@ func AdultDeath(population Population, totalDeathCount int) Population {
 	}
 	population.individuals = updatedIndividuals
 
-	// Return the updated population with the deceased individuals removed.
-	return population
 }
 
 //contains takes a slice and an element as input as returns a boolean 
