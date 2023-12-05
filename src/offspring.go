@@ -32,6 +32,8 @@ func (population *Population)DoOffspring(pairs [][]Individual) []Individual {
 			pairoffspring[i].position.x = pair[0].position.x
 			pairoffspring[i].position.y = pair[0].position.y
 
+			pairoffspring[i].grid = pair[0].grid
+
 			// decide genetic genotype based on the parents.
 			pairoffspring[i].genetics = generateGenetics(pair[0].genetics, pair[1].genetics)
 
