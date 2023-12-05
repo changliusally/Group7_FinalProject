@@ -11,7 +11,7 @@ func main() {
 
 	// set up the timer
 	start_time := time.Now()
-	foldertime := start_time.strftime("%Y%m%d_%H%M%S")
+	foldertime := start_time.Format("%Y%m%d_%H%M%S")
 
 	// read agv from command line
 	// the format: main.exe C:/.../inputfolder inputvars.csv output_folder
@@ -19,34 +19,26 @@ func main() {
 	fmt.Println(os.Args[0])
 
 	// check the input folder
-	inputFolder, err1 := os.Args[1]
-	if err1 != nil {
-		panic("Error: input folder not found")
-	}
+	inputFolder := os.Args[1]
 
 	// read inputvars.csv
-	inputFile, err2 := os.Args[2]
-	if err2 != nil {
-		panic("Error: inputvars.csv not found")
-	}
+	inputFile:= os.Args[2]
 
 	// check the output folder
-	output, err3 := os.Args[3]
-	if err3 != nil {
-		panic("Error: output folder not found")
-	}
+	output := os.Args[3]
 
-	if len(args) >= 4 {
-		datadir = inputFolder + '/'
+	var fileans string 
+	var outdir string 
+	if len(os.Args) >= 4 {
+		datadir := inputFolder + string('/')
 		fileans = datadir + inputFile
-		outdir = datadir + output + str(foldertime) + '/'
+		outdir = datadir + output + foldertime + string('/')
 	} else {
-		print("User must specify data directory, input file name, and output file directory (e.g., at command line type main.exe ../data/ inputvariables.csv exampleout).")
-		sys.exit()
+		panic("User must specify data directory, input file name, and output file directory (e.g., at command line type main.exe ../data/ inputvariables.csv exampleout).")
 	}
 
 	// read in the input file
-	inputvars = Loadfile(fileans, true)
+	inputvars := Loadfile(fileans, true)
 	if len(inputvars) != 17 {
 		panic("Error: inputvars.csv's column number is not correct")
 	}
@@ -58,12 +50,12 @@ func main() {
 
 	fmt.Println("Now, begin Monte-Carlo Looping")
 	// begin Monte-Carlo Looping
-	generations := MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model)
+	generations := MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model, method)
 
 	fmt.Println("Monte-Carlo Looping is complete")
 	// write the output file
 	WriteOutput(generations, outputYear, outdir)
-	fmt.println("Output file is written")
+	fmt.Println("Output file is written")
 
 	// darw the output figure
 
@@ -79,7 +71,7 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 		numProcessors = mcRun
 	}
 	n := mcRun / numProcessors
-	monteResult := make([]Generation, 0)
+	MonteResult := make([]Generation, 0)
 
 	output := make(chan []Generation, numProcessors)
 
@@ -89,7 +81,7 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 		}
 
 		// begain generation looping
-		go MonteCarloLoopingSingle(n, looptime, cdmat, landscape, model, generation, output, method)
+		go MonteCarloLoopingSingle(n, looptime, cdmat, landscape, model, population, output, method)
 
 	}
 
@@ -103,7 +95,7 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 }
 
 // Monte-Carlo Looping, run single processor
-func MonteCarloLoopingSingle(n int, looptime int, cdmat [][]float64, landscape Landscape, model Model, output chan []Generation, method string) {
+func MonteCarloLoopingSingle(n int, looptime int, cdmat [][]float64, landscape Landscape, model Model, population Population, output chan []Generation, method string) {
 
 	generations := make([]Generation, n)
 	// begin generation looping
@@ -120,7 +112,7 @@ func MonteCarloLoopingSingle(n int, looptime int, cdmat [][]float64, landscape L
 // every generation looping
 func GenerationLooping(looptime int, cdmat [][]float64, landscape Landscape, model Model, population Population, method string) Generation {
 	// initialize the generation, it is the timepoints slice of population
-	generation := make(Generation, looptime+1)
+	generation := make([]Population, looptime+1)
 	generation[0] = population
 
 	for i := 1; i <= looptime; i++ {
@@ -128,7 +120,9 @@ func GenerationLooping(looptime int, cdmat [][]float64, landscape Landscape, mod
 		generation[i] = UpdateGeneration(generation[i-1], landscape, model, cdmat, method)
 	}
 
-	return generation
+	var newGeneration Generation
+	newGeneration.population = generation
+	return newGeneration
 
 }
 
@@ -179,7 +173,7 @@ func CopyInd(currentIndividual Individual) Individual {
 	newIndividual.sex = currentIndividual.sex
 	newIndividual.age = currentIndividual.age
 	newIndividual.genetics = currentIndividual.genetics
-	newIndividual.grid = currentIndividual.grid
+	newIndividual.gridIn = currentIndividual.gridIn
 
 	return newIndividual
 }
