@@ -1,2 +1,2 @@
 xyfilename,mcruns,looptime,output_years,cdmat,mateFrequency,matureAge,fecundity,femaleRate,popModel,r,K_env,K_Grid,width,Fitness_aa,Fitness_Aa,Fitness_AA
-xyED16.csv,3,5,0,EDcdmatrix16.csv,0.5,1,2,0.5,exp,1,16,10,16,50,50,100
+100,3,5,0,EDcdmatrix16.csv,0.5,1,2,0.5,exp,1,100,10,100,50,50,100
