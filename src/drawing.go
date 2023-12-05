@@ -14,9 +14,6 @@ type Canvas struct {
 	height int
 }
 
-func (c *Canvas) GetImage() image.Image {
-	return c.img
-}
 
 // function DrawPopulation
 func DrawPopulation(population Population, landscape Landscape) Canvas {
