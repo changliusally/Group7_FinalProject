@@ -45,7 +45,7 @@ func (population *Population) DoOffspring(pairs [][]Individual, landscape Landsc
 			}
 
 			offspring = append(offspring, pairoffspring[i])
-			population.individuals = append(population.individuals, pairoffspring[i])
+			//population.individuals = append(population.individuals, pairoffspring[i])
 		}
 	}
 
