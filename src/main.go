@@ -5,6 +5,7 @@ import (
 	"os"
 	"runtime"
 	"time"
+	"gifhelper"
 )
 
 func main() {
@@ -22,13 +23,13 @@ func main() {
 	inputFolder := os.Args[1]
 
 	// read inputvars.csv
-	inputFile := os.Args[2]
+	inputFile:= os.Args[2]
 
 	// check the output folder
 	output := os.Args[3]
 
-	var fileans string
-	var outdir string
+	var fileans string 
+	var outdir string 
 	var datadir string
 	if len(os.Args) >= 4 {
 		datadir = inputFolder + string('/')
@@ -43,7 +44,7 @@ func main() {
 	if len(inputvars[0]) != 17 {
 		panic("Error: inputvars.csv's column number is not correct")
 	}
-	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0], datadir)
+	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0],datadir)
 
 	fmt.Println("Input file is read")
 	var method string
@@ -59,6 +60,21 @@ func main() {
 	fmt.Println("Output file is written")
 
 	// darw the output figure
+	images := AnimateSystem(generations[2].population, landscape, 1) //animate the timepoints
+	
+	fmt.Println("images drawn!")
+
+	fmt.Println("generate GIF")
+
+	outputFile := "SkySimulation_2" //output file name
+
+	gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
+
+
+
+	fmt.Println("Simulation complete!")
+
+
 
 }
 
