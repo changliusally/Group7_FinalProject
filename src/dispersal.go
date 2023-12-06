@@ -15,36 +15,37 @@ import (
 // DoDispersal is a function than do dispersal of offsprings and population, and removed the redundant offspring when there is no available free grid for them to disperse.
 // It will traverse the list of offspring and allocate free grid for it to disperse, and return the death number of offsprings.
 func (pop *Population)DoDispersal(land Landscape, offSpring []Individual, probmatrix [][]float64) int{
-	
+	death := 0 // record the number of population death when disperse
 	dispcount := 0  //the number of dispersed offspring
 	offcount := 0  // the number of traversed individuals in population and offsprings
 	free := land.K_env-len(pop.individuals)
 
-	freegrid := CheckGrid(land, offSpring)
-	//  makes sure loop stops at carrying capacity (ie, total number of freegrids) or stops at end of offpsring+population list
-	for dispcount < free && offcount < len(offSpring)+len(pop.individuals) {
-
-		// visit every existing individuals in population
-		for n := range pop.individuals {
-			probarray := GetProbArray(pop.individuals, n, probmatrix, freegrid)
-			targetGrid := w_choice(freegrid, probarray)
-			differentialmortality := DoSelection(pop.individuals[n],targetGrid,pop.fitness)
-			differentialmortality_Total := 1 - ((1 - differentialmortality) * (1 - pop.deathRate))
-			rand.Seed(time.Now().UnixNano())
-			randcheck := rand.Float64()
-			if randcheck < differentialmortality_Total {
-				offcount += 1
-				continue
-			}
-			offcount += 1
-
-			pop.individuals[n].gridIn = targetGrid
-			pop.individuals[n].position.x, pop.individuals[n].position.y = RandomGridxy(targetGrid, land)
-
+	// visit every existing individuals in population
+	for n := range pop.individuals {
+		freegrid := CheckGrid(land, pop.individuals)
+		probarray := GetProbArray(pop.individuals, n, probmatrix, freegrid)
+		targetGrid := w_choice(freegrid, probarray)
+		differentialmortality := DoSelection(pop.individuals[n],targetGrid,pop.fitness)
+		differentialmortality_Total := 1 - ((1 - differentialmortality) * (1 - pop.deathRate))
+		rand.Seed(time.Now().UnixNano())
+		randcheck := rand.Float64()
+		if randcheck < differentialmortality_Total {
+			death += 1
+			continue
 		}
+
+		// update the population position
+		pop.individuals[n].gridIn = targetGrid
+		pop.individuals[n].position.x, pop.individuals[n].position.y = RandomGridxy(targetGrid, land)
+
+	}
+
+	//  makes sure loop stops at carrying capacity (ie, total number of freegrids) or stops at end of offpsring list
+	for dispcount < free && offcount < len(offSpring) {
 
 		// visit every offspring
 		for i := range offSpring{
+			freegrid := CheckGrid(land, pop.individuals)
 			probarray := GetProbArray(offSpring, i, probmatrix, freegrid)
 			if len(freegrid)!=0 {
 				targetGrid := w_choice(freegrid,probarray)
@@ -72,6 +73,7 @@ func (pop *Population)DoDispersal(land Landscape, offSpring []Individual, probma
 	}
 
 	deathcount := offcount - dispcount
+	deathcount = deathcount + death
 	return deathcount
 	
 }
