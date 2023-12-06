@@ -13,30 +13,30 @@ import (
 //Combine all Individuals into a single slice []Individual. Randomly assign their genders, achieving the female proportion as population.femaleRate.
 //Finally, add all Individuals to Population.
 
-func (population *Population)DoOffspring(pairs [][]Individual) []Individual {
+func (population *Population) DoOffspring(pairs [][]Individual, landscape Landscape) []Individual {
 	var offspring []Individual
 
-	//update the offsprings of each mating pair 
+	//update the offsprings of each mating pair
 	for _, pair := range pairs {
 		// Determine the number of offspring
 		numOffspring := population.fecundity
-		//create a slice of Individuals representing the offsprings of this mating couple 
+		//create a slice of Individuals representing the offsprings of this mating couple
 		pairoffspring := make([]Individual, numOffspring)
 
-		//update each offspring 
+		//update each offspring
 		for i := 0; i < numOffspring; i++ {
 			// Create new offspring
-			pairoffspring[i].age = 0 
+			pairoffspring[i].age = 0
 
 			// Inherits mother's position
-			pairoffspring[i].position.x = pair[0].position.x + rand.Int(5)
-			pairoffspring[i].position.y = pair[0].position.y + rand.Int(5)
+			//pairoffspring[i].position.x = pair[0].position.x + rand.Int(5)
+			//pairoffspring[i].position.y = pair[0].position.y + rand.Int(5)
+			pairoffspring[i].position.x, pairoffspring[i].position.y = RandomGridxy(pair[0].gridIn, landscape)
 
-			pairoffspring[i].gridIn = pair[0].gridIn 
+			pairoffspring[i].gridIn = pair[0].gridIn
 
 			// decide genetic genotype based on the parents.
 			pairoffspring[i].genetics = generateGenetics(pair[0].genetics, pair[1].genetics)
-
 
 			// Randomly assign sex based on female rate
 			if rand.Float64() < population.femaleRate {
@@ -53,8 +53,8 @@ func (population *Population)DoOffspring(pairs [][]Individual) []Individual {
 	return offspring
 }
 
-//function poisson takes a lambda parameter and return a integer representing the number 
-//of offsprings of a mating couple is the population's breeding is poisson distribution 
+// function poisson takes a lambda parameter and return a integer representing the number
+// of offsprings of a mating couple is the population's breeding is poisson distribution
 func poisson(lambda float64) int {
 	L := math.Exp(-lambda)
 	k := 0
@@ -67,12 +67,12 @@ func poisson(lambda float64) int {
 	return k - 1
 }
 
-//generateGenetics takes two integers as parents' genetics and return an integer
-//representing the offspring's genetics 
+// generateGenetics takes two integers as parents' genetics and return an integer
+// representing the offspring's genetics
 func generateGenetics(father, mother int) int {
 	// Simple genetic model: AA (2), Aa (1), aa (0)
 
-	//generate a random number 
+	//generate a random number
 	randVal := rand.Float64()
 
 	// Both parents are AA
