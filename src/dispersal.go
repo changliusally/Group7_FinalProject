@@ -4,6 +4,7 @@ import (
 	
 	"time"
 	"math/rand"
+	"time"
 )
 
 // Dispersal defines the actions that offspring leave their mother and disperse to any other random grid(place) 
@@ -184,6 +185,7 @@ func DoSelection(dispOff Individual, chosenGrid int, fitness []float64) float64{
 
 // randomGridxy takes in the grid index, and will randomly generate a location within its range.
 func RandomGridxy(target int, land Landscape) (float64,float64) {
+	rand.Seed(time.Now().UnixNano())
 	x_min := land.grid[target].position.x
 	y_min := land.grid[target].position.y
 
