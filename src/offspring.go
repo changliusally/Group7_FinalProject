@@ -29,8 +29,8 @@ func (population *Population)DoOffspring(pairs [][]Individual) []Individual {
 			pairoffspring[i].age = 0 
 
 			// Inherits mother's position
-			pairoffspring[i].position.x = pair[0].position.x
-			pairoffspring[i].position.y = pair[0].position.y
+			pairoffspring[i].position.x = pair[0].position.x + rand.Int(5)
+			pairoffspring[i].position.y = pair[0].position.y + rand.Int(5)
 
 			pairoffspring[i].gridIn = pair[0].gridIn 
 
