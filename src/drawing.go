@@ -1,7 +1,7 @@
 package main
 
 import (
-	"draw2dimg"
+	"github.com/llgcode/draw2d/draw2dimg"
 	"image"
 	"image/color"
 	"math"
@@ -12,9 +12,25 @@ type Canvas struct {
 	width  int // both width and height are in pixels
 	height int
 }
+//AnimateSystem takes a slice of Sky objects along with a canvas width
+//parameter and generates a slice of images corresponding to drawing each Sky
+//on a canvasWidth x canvasWidth canvas
+func AnimateSystem(populations []Population, landscape Landscape, drawingFrequency int) []image.Image {
+	images := make([]image.Image, 0)
 
+	for i := range populations {
+		//if is is divisible by 
+		if i % drawingFrequency == 0 {
+			images = append(images, DrawPopulation(populations[i], landscape))
+		}
+	}
+
+
+
+	return images
+}
 // function DrawPopulation
-func DrawPopulation(population Population, landscape Landscape) Canvas {
+func DrawPopulation(population Population, landscape Landscape) image.Image {
 	canvasWidth := landscape.width
 	gridSize := canvasWidth / 4
 
@@ -54,11 +70,11 @@ func DrawPopulation(population Population, landscape Landscape) Canvas {
 		//
 		c.SetFillColor(color)
 		//c.Circle(x+float64(gridSize)/2, y+float64(gridSize)/2, float64(gridSize)/2)
-		c.Circle(x, y, float64(landscape.width/800))
+		c.Circle(x, y, float64(landscape.width/100))
 		c.Fill()
 	}
 
-	return c
+	return c.GetImage()
 }
 
 // Create a new canvas
@@ -122,4 +138,8 @@ func (c *Canvas) Circle(cx, cy, r float64) {
 // draw the lines
 func (c *Canvas) Fill() {
 	c.gc.Fill()
+}
+
+func (c *Canvas) GetImage() image.Image {
+	return c.img
 }
