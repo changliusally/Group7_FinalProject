@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"gifhelper"
 	"os"
 	"runtime"
 	"time"
@@ -45,6 +44,7 @@ func main() {
 		panic("Error: inputvars.csv's column number is not correct")
 	}
 	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0], datadir)
+	population.DrawPopulation(landscape, "origin")
 
 	fmt.Println("Input file is read")
 	var method string
@@ -56,21 +56,10 @@ func main() {
 
 	fmt.Println("Monte-Carlo Looping is complete")
 	// write the output file
-	WriteOutput(generations, outputYear, outdir)
+	WriteOutput(generations, outputYear, outdir, landscape)
 	fmt.Println("Output file is written")
 
 	// darw the output figure
-	images := AnimateSystem(generations[2].population, landscape, 1) //animate the timepoints
-
-	fmt.Println("images drawn!")
-
-	fmt.Println("generate GIF")
-
-	outputFile := "SkySimulation_2" //output file name
-
-	gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
-
-	fmt.Println("Simulation complete!")
 
 }
 
