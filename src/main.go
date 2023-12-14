@@ -135,7 +135,8 @@ func UpdateGeneration(currentPopulation Population, landscape Landscape, model M
 	// find the mating pairs for this generation and the total number of new born individuals in this generation
 	matingPair, numNewBorn := DoMate(newPopulation)
 	//fmt.Println("mating finish")
-	newBornIndividuals := newPopulation.DoOffspring(matingPair, landscape)
+	method = "constant"
+	newBornIndividuals := newPopulation.DoOffspring(matingPair, landscape, method)
 	//fmt.Println("offspring finish")
 	//covert cd matrix to probability matrix
 	probMatrix := CalProb(method, cdmat)
