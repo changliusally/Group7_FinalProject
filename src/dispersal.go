@@ -18,13 +18,14 @@ func (pop *Population)DoDispersal(land Landscape, offSpring []Individual, probma
 	dispcount := 0
 	offcount := 0
 	free := land.K_env-len(pop.individuals)
+	
 
-	freegrid := CheckGrid(land, offSpring)
 	//  makes sure loop stops at carrying capacity (ie, total number of freegrids) or stops at end of offpsring list
 	for dispcount < free && offcount < len(offSpring) {
 
 		// visit every offspring
 		for i := range offSpring{
+			freegrid := CheckGrid(land, pop.individuals)
 			probarray := GetProbArray(offSpring, i, probmatrix, freegrid)
 			if len(freegrid)!=0 {
 				targetGrid := w_choice(freegrid,probarray)
@@ -52,6 +53,7 @@ func (pop *Population)DoDispersal(land Landscape, offSpring []Individual, probma
 	}
 
 	deathcount := offcount - dispcount
+	deathcount = deathcount + death
 	return deathcount
 	
 }
@@ -207,6 +209,14 @@ func CalProb(method string, cdmatrix [][]float64) [][]float64 {
 		panic("The cost distance cannot have value smaller than 0.")
 	}
 
+	if max == 0 {
+		for i:= 0; i < len(cdmatrix); i++{
+			for j := 0; j < len(cdmatrix[0]); j++ {
+				probMatrix[i][j] = 1
+			}
+		}
+	}
+
 	if method == "linear" {
 		for i:= 0; i < len(cdmatrix); i++{
 			for j := 0; j < len(cdmatrix[0]); j++ {
@@ -214,6 +224,16 @@ func CalProb(method string, cdmatrix [][]float64) [][]float64 {
 			}
 		}
 	}
+	
+
+	if method == "inverse2" {
+		for i:= 0; i < len(cdmatrix); i++{
+			for j := 0; j < len(cdmatrix[0]); j++ {
+				probMatrix[i][j] = 1.0/(cdmatrix[i][j]*cdmatrx[i][j])
+			}
+		}
+	}
+	
 
 	return probMatrix
 }

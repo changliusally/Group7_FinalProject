@@ -19,46 +19,72 @@ func (population *Population) AdultDeath(totalDeathCount int) {
 		//check how many individuals are in the current population 
 		count := 0
 		individualToDie := make([]Individual, 0) //all death candidates 
+		AA := make([]Individual,0)
+		Aa := make([]Individual,0)
+		aa := make([]Individual,0)
 		for i:= range population.individuals {
 			if population.individuals[i].age > 0 {
 				individualToDie = append(individualToDie, population.individuals[i])
 				count++
+				if population.individuals[i].genetics == 0 {
+					aa = append(aa, population.individuals[i])
+				} else if population.individuals[i].genetics == 1 {
+					Aa = append(Aa, population.individuals[i])
+				} else {
+					AA = append(AA, population.individuals[i])
+				}
 			}
 		}
 
-		/*
-		femaleRate := population.femaleRate 
-		//death of female and male should meet population.femaleRate
-		femaleDeathCount := int(float64(totalDeathCount) * population.femaleRate)
-		// Calculate the number of males to die (total deaths minus female deaths).
-		maleDeathCount := totalDeathCount - femaleDeathCount
-
-		//check how many female and male individuals 
-		femaleToDie := make([]Individual,0)
-		maleToDie := make([]Individual,0)
-
-		for i := range individualToDie {
-			if individualToDie[i].sex == 0 { //male 
-				maleToDie = append(maleToDie, individualToDie[i])
-			} else {
-				femaleToDie = append(femaleToDie, individualToDie[i])
-			}
-		}
-		femaleReal := len(femaleToDie)
-		maleReal := len(maleToDie)
-		*/
-		//newIndividual := CopyIndividual(population.individuals)
 		if count < totalDeathCount {
 			totalDeathCount = count 
 		}
-		for i := 0; i < totalDeathCount; i++ {
-			n := len(individualToDie)
-			randVal := rand.Intn(n)
-			indi := individualToDie[randVal]
-			population.individuals = Delete(population.individuals, indi)
-			individualToDie = Delete(individualToDie, indi)
+		paa := 0.375
+		pAa := 0.375
+		pAA := 0.25
+
+		lenaa := int(float64(totalDeathCount) * paa)
+		lenAa := int(float64(totalDeathCount) * pAa)
+		lenAA := int(float64(totalDeathCount) * pAA)
+
+		if lenaa > len(aa) {
+			lenaa = len(aa)
 		}
-		//population.individuals = newIndividual
+		if lenAa > len(Aa) {
+			lenAa = len(Aa)
+		}
+		if lenAA > len(AA) {
+			lenAA = len(AA)
+		}
+		total := totalDeathCount - lenaa - lenAa - lenAA 
+
+		for i := 0; i < lenaa; i++ {
+			randVal := rand.Intn(len(aa))
+			population.individuals = Delete(population.individuals, aa[randVal])
+			individualToDie = Delete(individualToDie, aa[randVal])
+			aa = Delete(aa, aa[randVal])
+		}
+		for i := 0; i < lenAa; i++ {
+			randVal := rand.Intn(len(Aa))
+			population.individuals = Delete(population.individuals, Aa[randVal])
+			individualToDie = Delete(individualToDie, Aa[randVal])
+			Aa = Delete(Aa, Aa[randVal])
+		}
+		for i := 0; i < lenAA; i++ {
+			randVal := rand.Intn(len(AA))
+			population.individuals = Delete(population.individuals, AA[randVal])
+			individualToDie = Delete(individualToDie, AA[randVal])
+			AA = Delete(AA, AA[randVal])
+		}
+
+		if total > 0 {
+			for i := 0; i <= total; i++ {
+				rand := rand.Intn(len(individualToDie))
+				population.individuals = Delete(population.individuals, individualToDie[rand])
+				individualToDie = Delete(individualToDie, individualToDie[rand])
+			}
+		}
+		
 	}
 	
 }
