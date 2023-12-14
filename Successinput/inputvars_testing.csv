@@ -1,0 +1,3 @@
+xyfilename,mcruns,looptime,output_years,gridformat,matecdmat,dispcdmat,matemoveno,mateFrequency,popModel,r,K_env,Fitness_AA,Fitness_Aa,Fitness_aa
+xyED16,1,5,1,cdpop,EDcdmatrix16,EDcdmatrix16,4,0.5,exp,1,16,50,50,100
+xyED16_testing,1,5,1,cdpop,EDcdmatrix16,EDcdmatrix16,4,1,logistic,1,16,50,50,100
