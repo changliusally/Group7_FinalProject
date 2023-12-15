@@ -12,7 +12,7 @@ import (
 // input: a csv file
 // output: a slice of slice of string recording the data
 func Loadfile(filename string, header bool) [][]string {
-	
+
 	// Open the file
 	file, err := os.Open(filename) //
 	if err != nil {
@@ -43,13 +43,14 @@ func Loadfile(filename string, header bool) [][]string {
 
 // read parameters from input file
 // input: a slice of string
-func ReadInputParameters(parameters []string,datadir string) (Population, Landscape, Model, int, int, int, [][]float64) {
+func ReadInputParameters(parameters []string, datadir string) (Population, Landscape, Model, int, int, int, [][]float64) {
 	// initialize the population
 	var population Population
 
 	var individuals []Individual
 
-	// first column is the filename of xyfile(individuals information)
+	// first column is the filename of xyfile(individuals information) or a number of individuals
+	// if it is a number, then random generate individuals
 	xyfile := parameters[0]
 	random := false
 	// check xyfile whether is a number or a filename
@@ -59,7 +60,7 @@ func ReadInputParameters(parameters []string,datadir string) (Population, Landsc
 		random = true
 	} else {
 		// xyfile is a filename
-		xyFile := datadir+xyfile
+		xyFile := datadir + xyfile
 		xyParameters := Loadfile(xyFile, true)
 		if len(xyParameters[0]) != 6 {
 			panic("Error: xyfile column number is not correct")
@@ -100,7 +101,7 @@ func ReadInputParameters(parameters []string,datadir string) (Population, Landsc
 
 	// fifth column is the filename of cdmatrix
 	cdmatrix := parameters[4]
-	cdPath:=datadir+cdmatrix
+	cdPath := datadir + cdmatrix
 	cdmatData := Loadfile(cdPath, false)
 	if cdmatData[0][0] != "0" { // check if the first column is 0
 		//fmt.Println(cdmatData[0][0])
@@ -148,12 +149,17 @@ func ReadInputParameters(parameters []string,datadir string) (Population, Landsc
 	}
 	population.femaleRate = femaleRate
 
+	// tenth column is the string of disperal method
+	dispersalMethod := parameters[9]
+	// linear, inverse2
+	if dispersalMethod != "linear" && dispersalMethod != "inverse2" {
+		panic("Error: dispersal method is wrong")
+	}
+	population.dispersalMethod = dispersalMethod
+
 	// initialize the landscape
 	var landscape Landscape
 	var model Model
-
-	// tenth column is the string of population model
-	model.popModel = parameters[9]
 
 	// eleventh column is the float number of density dependent growth rate	r	‘1.0’	The growth rate used in the density dependent functions above (‘logistic’, ‘richards’, and ‘rickers’).
 	r_env, err8 := strconv.ParseFloat(parameters[10], 64)
@@ -198,8 +204,6 @@ func ReadInputParameters(parameters []string,datadir string) (Population, Landsc
 	landGrid := InitializeLand(landscape.width)
 	landscape.grid = landGrid
 
-
-
 	if random == true {
 		// generate the individuals
 		individuals = RandomGenerateIndividuals(xyVal, landscape)
@@ -234,7 +238,6 @@ func ReadInputParameters(parameters []string,datadir string) (Population, Landsc
 	}
 	population.fitness = fitness
 
-
 	return population, landscape, model, mcRun, looptime, outputYear, cdmat
 }
 
@@ -243,12 +246,12 @@ func ReadInputParameters(parameters []string,datadir string) (Population, Landsc
 // output: a slice of individuals
 func ReadXyfile(individualData [][]string) []Individual {
 	// initialize the individuals
-	individuals:=make([]Individual,len(individualData))
+	individuals := make([]Individual, len(individualData))
 	fmt.Println(individualData)
 
 	for i := range individualData {
-		row:=individualData[i]
-	
+		row := individualData[i]
+
 		// initialize the individual
 		var individual Individual
 
@@ -320,7 +323,7 @@ func ReadXyfile(individualData [][]string) []Individual {
 			panic("Error: genetics wrong")
 		}
 
-		individuals[i]=individual
+		individuals[i] = individual
 	}
 
 	return individuals
@@ -331,15 +334,15 @@ func ReadXyfile(individualData [][]string) []Individual {
 func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 	// initialize the individuals
 	var individuals []Individual
-   
+
 	// generate the position, age, sex ,id, genetics for every individual
 	for i := 0; i < num; i++ {
 		var individual Individual
-	 	individual.age = rand.Intn(4) //0,1,2,3
-	 	individual.sex = rand.Intn(2) //0,1
-	 	individual.id = i
-	 	//individual.genetics = rand.Intn(3) //0,1,2
-	 	randGene := rand.Intn(4)
+		individual.age = rand.Intn(4) //0,1,2,3
+		individual.sex = rand.Intn(2) //0,1
+		individual.id = i
+		//individual.genetics = rand.Intn(3) //0,1,2
+		randGene := rand.Intn(4)
 		if randGene == 0 {
 			individual.genetics = 0
 		} else if randGene == 1 || randGene == 2 {
@@ -347,17 +350,18 @@ func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 		} else {
 			individual.genetics = 2
 		}
-	 	// rand position
-	 	individual.gridIn = rand.Intn(16) //gridin 和 width的关系是什么
-	 	var position OrderedPair
-	 	position.x, position.y = RandomGridxy(individual.gridIn, landscape)
-	 	individual.position = position
-	 	individuals = append(individuals, individual)
+		// rand position
+		//individual.gridIn = rand.Intn(16) //gridin 和 width的关系是什么
+		individual.gridIn = rand.Intn(900)
+		var position OrderedPair
+		position.x, position.y = RandomGridxy(individual.gridIn, landscape)
+		individual.position = position
+		individuals = append(individuals, individual)
 	}
 	fmt.Println(individuals)
-   
+
 	return individuals
-   }
+}
 
 // read cdmatrix
 // input: a slice of slice of string
@@ -455,75 +459,76 @@ func WriteCsv(individuals []Individual, filename string) {
 
 /*
 //
-func (pop *Population)UpdateGrid(landscape Landscape) {
-	for _, inid := range pop.individuals {
-		inid.gridIn = FindGrid(landscape, inid)
-	}
-}
 
-//FindGrid takes a lanscape and a orderedpair as input and returns 
-//a integer that represents the grid number of this individual whose 
-//position is this orderedpair 
-func FindGrid(landscape Landscape, inid Individual) int {
-	width := landscape.width 
-
-	position := inid.position
-	//check if the position is valid
-	if position.x > float64(width) || position.x < 0 {
-		panic("Invalid x coordinate")
-	}
-	if position.y > float64(width) || position.y < 0 {
-		panic("Invalid y coordinate")
-	}
-
-	//find the grid number
-	if position.x >= 0.0 && position.x < float64(width)/4.0 {
-		if position.y >= 0.0 && position.y < float64(width)/4.0 {
-			return 0
-		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-			return 4
-		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-			return 8
-		} else {
-			return 12
-		}
-	} else if position.x >= float64(width)/4.0 && position.x < float64(width)/2.0 {
-		if position.y >= 0 && position.y < float64(width)/4.0 {
-			return 1
-		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-			return 5
-		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-			return 9
-		} else {
-			return 13
-		}
-	} else if position.x >= float64(width)/2.0 && position.x < float64(3*width)/4.0 {
-		if position.y >= 0 && position.y < float64(width)/4.0 {
-			return 2
-		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-			return 6
-		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-			return 10
-		} else {
-			return 14
-		}
-	} else {
-		if position.y >= 0 && position.y < float64(width)/4.0 {
-			return 3
-		} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-			return 7
-		} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-			return 11
-		} else {
-			return 15
+	func (pop *Population)UpdateGrid(landscape Landscape) {
+		for _, inid := range pop.individuals {
+			inid.gridIn = FindGrid(landscape, inid)
 		}
 	}
 
+//FindGrid takes a lanscape and a orderedpair as input and returns
+//a integer that represents the grid number of this individual whose
+//position is this orderedpair
+
+	func FindGrid(landscape Landscape, inid Individual) int {
+		width := landscape.width
+
+		position := inid.position
+		//check if the position is valid
+		if position.x > float64(width) || position.x < 0 {
+			panic("Invalid x coordinate")
+		}
+		if position.y > float64(width) || position.y < 0 {
+			panic("Invalid y coordinate")
+		}
+
+		//find the grid number
+		if position.x >= 0.0 && position.x < float64(width)/4.0 {
+			if position.y >= 0.0 && position.y < float64(width)/4.0 {
+				return 0
+			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+				return 4
+			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+				return 8
+			} else {
+				return 12
+			}
+		} else if position.x >= float64(width)/4.0 && position.x < float64(width)/2.0 {
+			if position.y >= 0 && position.y < float64(width)/4.0 {
+				return 1
+			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+				return 5
+			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+				return 9
+			} else {
+				return 13
+			}
+		} else if position.x >= float64(width)/2.0 && position.x < float64(3*width)/4.0 {
+			if position.y >= 0 && position.y < float64(width)/4.0 {
+				return 2
+			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+				return 6
+			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+				return 10
+			} else {
+				return 14
+			}
+		} else {
+			if position.y >= 0 && position.y < float64(width)/4.0 {
+				return 3
+			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
+				return 7
+			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
+				return 11
+			} else {
+				return 15
+			}
+		}
 
 }
 */
 func FindGrid(landscape Landscape, individuals []Individual) []Individual {
-	width := landscape.width 
+	width := landscape.width
 
 	for i := range individuals {
 		position := individuals[i].position
@@ -544,7 +549,7 @@ func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
 				individuals[i].gridIn = 8
 			} else {
-				individuals[i].gridIn =12
+				individuals[i].gridIn = 12
 			}
 		} else if position.x >= float64(width)/4.0 && position.x < float64(width)/2.0 {
 			if position.y >= 0 && position.y < float64(width)/4.0 {
@@ -580,6 +585,5 @@ func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 
 	}
 	return individuals
-	
 
 }

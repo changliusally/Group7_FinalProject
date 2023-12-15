@@ -5,7 +5,6 @@ import (
 	"os"
 	"runtime"
 	"time"
-	"gifhelper"
 )
 
 func main() {
@@ -23,13 +22,13 @@ func main() {
 	inputFolder := os.Args[1]
 
 	// read inputvars.csv
-	inputFile:= os.Args[2]
+	inputFile := os.Args[2]
 
 	// check the output folder
 	output := os.Args[3]
 
-	var fileans string 
-	var outdir string 
+	var fileans string
+	var outdir string
 	var datadir string
 	if len(os.Args) >= 4 {
 		datadir = inputFolder + string('/')
@@ -44,15 +43,13 @@ func main() {
 	if len(inputvars[0]) != 17 {
 		panic("Error: inputvars.csv's column number is not correct")
 	}
-	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0],datadir)
+	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0], datadir)
 
 	fmt.Println("Input file is read")
-	var method string
-	method = "linear"
 
 	fmt.Println("Now, begin Monte-Carlo Looping")
 	// begin Monte-Carlo Looping
-	generations := MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model, method)
+	generations := MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model)
 
 	fmt.Println("Monte-Carlo Looping is complete")
 	// write the output file
@@ -60,26 +57,22 @@ func main() {
 	fmt.Println("Output file is written")
 
 	// darw the output figure
-	images := AnimateSystem(generations[1].population, landscape, 1) //animate the timepoints
-	
+	//images := AnimateSystem(generations[1].population, landscape, 1) //animate the timepoints
+
 	fmt.Println("images drawn!")
 
 	fmt.Println("generate GIF")
 
-	outputFile := "SkySimulation_1" //output file name
+	//outputFile := "SkySimulation_1" //output file name
 
-	gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
-
-
+	//gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
 
 	fmt.Println("Simulation complete!")
-
-
 
 }
 
 // Monte-Carlo Looping, run parallel
-func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, population Population, landscape Landscape, model Model, method string) []Generation {
+func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, population Population, landscape Landscape, model Model) []Generation {
 	// get the number of processors
 	numProcessors := runtime.NumCPU()
 
@@ -98,7 +91,7 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 		}
 
 		// begain generation looping
-		go MonteCarloLoopingSingle(n, looptime, cdmat, landscape, model, population, output, method)
+		go MonteCarloLoopingSingle(n, looptime, cdmat, landscape, model, population, output)
 
 	}
 
@@ -112,13 +105,13 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 }
 
 // Monte-Carlo Looping, run single processor
-func MonteCarloLoopingSingle(n int, looptime int, cdmat [][]float64, landscape Landscape, model Model, population Population, output chan []Generation, method string) {
+func MonteCarloLoopingSingle(n int, looptime int, cdmat [][]float64, landscape Landscape, model Model, population Population, output chan []Generation) {
 
 	generations := make([]Generation, n)
 	// begin generation looping
 	for i := 0; i < n; i++ {
 
-		generations[i] = GenerationLooping(looptime, cdmat, landscape, model, population, method)
+		generations[i] = GenerationLooping(looptime, cdmat, landscape, model, population)
 
 	}
 
@@ -127,14 +120,14 @@ func MonteCarloLoopingSingle(n int, looptime int, cdmat [][]float64, landscape L
 }
 
 // every generation looping
-func GenerationLooping(looptime int, cdmat [][]float64, landscape Landscape, model Model, population Population, method string) Generation {
+func GenerationLooping(looptime int, cdmat [][]float64, landscape Landscape, model Model, population Population) Generation {
 	// initialize the generation, it is the timepoints slice of population
 	generation := make([]Population, looptime+1)
 	generation[0] = population
 
 	for i := 1; i <= looptime; i++ {
 		// update the generation
-		generation[i] = UpdateGeneration(generation[i-1], landscape, model, cdmat, method)
+		generation[i] = UpdateGeneration(generation[i-1], landscape, model, cdmat)
 	}
 
 	var newGeneration Generation
@@ -144,7 +137,7 @@ func GenerationLooping(looptime int, cdmat [][]float64, landscape Landscape, mod
 }
 
 // update the generation
-func UpdateGeneration(currentPopulation Population, landscape Landscape, model Model, cdmat [][]float64, method string) Population {
+func UpdateGeneration(currentPopulation Population, landscape Landscape, model Model, cdmat [][]float64) Population {
 	newPopulation := CopyPop(currentPopulation)
 	// update the population
 	// find the mating pairs for this generation and the total number of new born individuals in this generation
@@ -153,7 +146,7 @@ func UpdateGeneration(currentPopulation Population, landscape Landscape, model M
 	newBornIndividuals := newPopulation.DoOffspring(matingPair, landscape)
 	//fmt.Println("offspring finish")
 	//covert cd matrix to probability matrix
-	probMatrix := CalProb(method, cdmat)
+	probMatrix := CalProb(newPopulation.dispersalMethod, cdmat)
 	deathCount := newPopulation.DoDispersal(landscape, newBornIndividuals, probMatrix)
 	//fmt.Println("disperse finish")
 	deathCountNew := 2*numNewBorn - deathCount
@@ -180,6 +173,7 @@ func CopyPop(currentPopulation Population) Population {
 	newPopulation.mateFreq = currentPopulation.mateFreq
 	newPopulation.fecundity = currentPopulation.fecundity
 	newPopulation.femaleRate = currentPopulation.femaleRate
+	newPopulation.dispersalMethod = currentPopulation.dispersalMethod
 	newPopulation.fitness = make([]float64, len(currentPopulation.fitness))
 	for i := range newPopulation.fitness {
 		newPopulation.fitness[i] = currentPopulation.fitness[i]
