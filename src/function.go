@@ -71,7 +71,7 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 		//fmt.Println("after", population.individuals)
 	}
 
-	//fmt.Println("hello0", individuals)
+	// fmt.Println("hello0", individuals)
 	// second column is the int number of Monte-Carlo run
 	mcRun, err1 := strconv.Atoi(parameters[1])
 	if err1 != nil {
