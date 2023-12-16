@@ -609,3 +609,15 @@ func CalTotalMale(pop Population) int {
 	}
 	return count
 }
+
+//CalAge takes a population as input and returns the number of individuals 
+//in this population whose age is greater than 1
+func CalAge(pop Population) int {
+	count := 0 
+	for i := range pop.individuals {
+		if pop.individuals[i].age >1 {
+			count++
+		}
+	}
+	return count
+}
