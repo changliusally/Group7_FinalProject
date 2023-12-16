@@ -1,16 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"canvas"
-	"draw2dimg"
-	"fmt"
 	"image"
 	"image/color"
-	"image/png"
-	"log"
 	"math"
-	"os"
+
+	"github.com/llgcode/draw2d/draw2dimg"
 )
 
 type Canvas struct {
@@ -20,8 +16,72 @@ type Canvas struct {
 	height int
 }
 
+// AnimateSystem takes a slice of Sky objects along with a canvas width
+// parameter and generates a slice of images corresponding to drawing each Sky
+// on a canvasWidth x canvasWidth canvas
+func AnimateSystem(populations []Population, landscape Landscape, drawingFrequency int) []image.Image {
+	images := make([]image.Image, 0)
+
+	for i := range populations {
+		//if is is divisible by
+		if i%drawingFrequency == 0 {
+			images = append(images, DrawPopulation(populations[i], landscape))
+		}
+	}
+
+	return images
+}
+
 // function DrawPopulation
-func (population Population) DrawPopulation(landscape Landscape, filename string) {
+func DrawPopulation(population Population, landscape Landscape) image.Image {
+	canvasWidth := landscape.width
+	gridSize := canvasWidth / 4
+
+	//draw canvas
+	c := CreateNewCanvas(canvasWidth, canvasWidth)
+
+	//set grid line
+	c.SetStrokeColor(MakeColor(0, 0, 0))
+	c.SetLineWidth(1)
+
+	// draw grid line
+	for i := 0; i <= 16; i++ {
+		x := float64(i) * float64(gridSize)
+		c.MoveTo(x, 0)
+		c.LineTo(x, float64(canvasWidth))
+		c.Stroke()
+		c.MoveTo(0, x)
+		c.LineTo(float64(canvasWidth), x)
+		c.Stroke()
+	}
+
+	// traverse through each individual
+	for _, individual := range population.individuals {
+		// calculate the position
+		x := individual.position.x
+		y := individual.position.y
+
+		var color color.Color
+		if individual.genetics == 0 { // AA
+			color = MakeColor(255, 0, 0) // red
+		} else if individual.genetics == 1 { // Aa
+			color = MakeColor(255, 165, 0) // orange
+		} else { // aa
+			color = MakeColor(255, 255, 0) // yellow
+		}
+
+		//
+		c.SetFillColor(color)
+		//c.Circle(x+float64(gridSize)/2, y+float64(gridSize)/2, float64(gridSize)/2)
+		c.Circle(x, y, float64(landscape.width/100))
+		c.Fill()
+	}
+
+	return c.GetImage()
+}
+
+// function DrawPopulation to draw png, rather than gif
+func (population Population) DrawPopulation2(landscape Landscape, filename string) {
 	canvasWidth := landscape.width
 	gridSize := canvasWidth / 4
 
@@ -142,24 +202,6 @@ func (c *Canvas) Fill() {
 	c.gc.Fill()
 }
 
-// Save the current canvas to a PNG file
-func (c *Canvas) SaveToPNG(filename string) {
-	f, err := os.Create(filename)
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	defer f.Close()
-	b := bufio.NewWriter(f)
-	err = png.Encode(b, c.img)
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	err = b.Flush()
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	fmt.Printf("Wrote %s OK.\n", filename)
+func (c *Canvas) GetImage() image.Image {
+	return c.img
 }

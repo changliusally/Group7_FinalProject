@@ -29,7 +29,8 @@ type Population struct {
 	fecundity       int       //mean offspring numbers: fixed number
 	femaleRate      float64   //the percetage of the total offsprings that are female
 	fitness         []float64 //fitness[0]:aa, fitness[1]:Aa, fitness[1]:AA
-	dispersalMethod string    //linear
+	dispersalMethod string    //linear or inverse2
+	offspringMethod string    //constant or poisson
 }
 
 type Generation struct {

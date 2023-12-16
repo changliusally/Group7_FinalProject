@@ -4,16 +4,16 @@ package main
 //sexual mating
 
 import (
-	"math/rand"
 	"fmt"
+	"math/rand"
 )
 
-//highest level function: DoMate 
-//It takes the population and the number of generation as input and 
-//returns a slices of paired individuals couples that is within the appropriate distance 
-//and is mature 
+// highest level function: DoMate
+// It takes the population and the number of generation as input and
+// returns a slices of paired individuals couples that is within the appropriate distance
+// and is mature
 func DoMate(population Population) ([][]Individual, int) {
-	//select individuals within appropriate age of a certain generation 
+	//select individuals within appropriate age of a certain generation
 	var mateCandidateFemale []Individual
 	var mateCandidateMale []Individual
 
@@ -27,22 +27,22 @@ func DoMate(population Population) ([][]Individual, int) {
 		}
 	}
 
-	//we then randomly select individuals within the female and male candidates 
-	n := Min(len(mateCandidateFemale), len(mateCandidateMale)) 
+	//we then randomly select individuals within the female and male candidates
+	n := Min(len(mateCandidateFemale), len(mateCandidateMale))
 	mateFreq := population.mateFreq
-	//randomly select female and male individuals and pair them together 
+	//randomly select female and male individuals and pair them together
 	matePair := RandomSelection(mateCandidateFemale, mateCandidateMale, mateFreq, n)
 
-	//The total number of mating pairs 
+	//The total number of mating pairs
 	numMatingPair := len(matePair)
 
 	return matePair, numMatingPair
 
 }
 
-//RandomSelection take a sclice of female candidates and a slice of male candidates and the mate frequency
-//randomly pair them 
-//mate without replacement 
+// RandomSelection take a sclice of female candidates and a slice of male candidates and the mate frequency
+// randomly pair them
+// mate without replacement
 func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFreq float64, n int) [][]Individual {
 	if len(mateCandidateFemale) == 0 || len(mateCandidateMale) == 0 {
 		fmt.Println(len(mateCandidateFemale), len(mateCandidateMale))
@@ -52,10 +52,10 @@ func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFr
 	var pairedIndividual [][]Individual
 
 	for i := 0; i < n; i++ {
-		//check whther the female will mate or not 
+		//check whther the female will mate or not
 		randNum := rand.Float64()
-		if randNum < mateFreq { //the female will mate 
-			//select an individual in male and an individual in female 
+		if randNum < mateFreq { //the female will mate
+			//select an individual in male and an individual in female
 			numFemale := len(mateCandidateFemale)
 			numMale := len(mateCandidateMale)
 			female := rand.Intn(numFemale)
@@ -63,8 +63,8 @@ func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFr
 
 			femaleIndividual := mateCandidateFemale[female]
 			maleIndividual := mateCandidateMale[male]
-			// we only allow individuals in the same grid to mate 
-			if femaleIndividual.gridIn == maleIndividual.gridIn { 
+			// we only allow individuals in the same grid to mate
+			if femaleIndividual.gridIn == maleIndividual.gridIn {
 				var newPair []Individual
 				newPair = append(newPair, femaleIndividual)
 				newPair = append(newPair, maleIndividual)
@@ -73,7 +73,7 @@ func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFr
 				mateCandidateMale = Delete(mateCandidateMale, maleIndividual)
 			}
 		}
-		
+
 	}
 
 	if len(pairedIndividual) == 0 {
@@ -82,7 +82,7 @@ func RandomSelection(mateCandidateFemale, mateCandidateMale []Individual, mateFr
 	return pairedIndividual
 }
 
-//Min takes two integers as input and returns the smaller integer
+// Min takes two integers as input and returns the smaller integer
 func Min(a, b int) int {
 	if a < b {
 		return a
@@ -91,11 +91,11 @@ func Min(a, b int) int {
 	}
 }
 
-//Delete takes an individualSlice and an individual variable as input and returns 
-//a slice of individuals with the individual variable deleted 
+// Delete takes an individualSlice and an individual variable as input and returns
+// a slice of individuals with the individual variable deleted
 func Delete(indSclice []Individual, a Individual) []Individual {
-	//check whether this individual is in the slice 
-	b := false 
+	//check whether this individual is in the slice
+	b := false
 	var deleteIndex int
 	for i := range indSclice {
 		if IsEqual(indSclice[i], a) {
@@ -112,12 +112,12 @@ func Delete(indSclice []Individual, a Individual) []Individual {
 	return indSclice
 }
 
-//IsEqual takes two Individual variables as input and returns a boolean indecating whether two individual
-//variables are equal 
+// IsEqual takes two Individual variables as input and returns a boolean indecating whether two individual
+// variables are equal
 func IsEqual(a, b Individual) bool {
-	bo := false 
+	bo := false
 	if (a.position == b.position) && (a.sex == b.sex) && (a.age == b.age) && (a.genetics == b.genetics) && (a.gridIn == b.gridIn) {
-		bo = true 
+		bo = true
 	}
 	return bo
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gifhelper"
 	"os"
 	"runtime"
 	"time"
@@ -40,7 +41,7 @@ func main() {
 
 	// read in the input file
 	inputvars := Loadfile(fileans, true)
-	if len(inputvars[0]) != 17 {
+	if len(inputvars[0]) != 18 {
 		panic("Error: inputvars.csv's column number is not correct")
 	}
 	population, landscape, model, mcRun, looptime, outputYear, cdmat := ReadInputParameters(inputvars[0], datadir)
@@ -53,19 +54,19 @@ func main() {
 
 	fmt.Println("Monte-Carlo Looping is complete")
 	// write the output file
-	WriteOutput(generations, outputYear, outdir)
+	WriteOutput(generations, outputYear, outdir, landscape)
 	fmt.Println("Output file is written")
 
 	// darw the output figure
-	//images := AnimateSystem(generations[1].population, landscape, 1) //animate the timepoints
+	images := AnimateSystem(generations[1].population, landscape, 1) //animate the timepoints
 
 	fmt.Println("images drawn!")
 
 	fmt.Println("generate GIF")
 
-	//outputFile := "SkySimulation_1" //output file name
+	outputFile := "Simulation_" //output file name
 
-	//gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
+	gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
 
 	fmt.Println("Simulation complete!")
 
@@ -143,8 +144,7 @@ func UpdateGeneration(currentPopulation Population, landscape Landscape, model M
 	// find the mating pairs for this generation and the total number of new born individuals in this generation
 	matingPair, numNewBorn := DoMate(newPopulation)
 	//fmt.Println("mating finish")
-	method = "constant"
-	newBornIndividuals := newPopulation.DoOffspring(matingPair, landscape, method)
+	newBornIndividuals := newPopulation.DoOffspring(matingPair, landscape, newPopulation.offspringMethod)
 	//fmt.Println("offspring finish")
 	//covert cd matrix to probability matrix
 	probMatrix := CalProb(newPopulation.dispersalMethod, cdmat)
@@ -175,6 +175,7 @@ func CopyPop(currentPopulation Population) Population {
 	newPopulation.fecundity = currentPopulation.fecundity
 	newPopulation.femaleRate = currentPopulation.femaleRate
 	newPopulation.dispersalMethod = currentPopulation.dispersalMethod
+	newPopulation.offspringMethod = currentPopulation.offspringMethod
 	newPopulation.fitness = make([]float64, len(currentPopulation.fitness))
 	for i := range newPopulation.fitness {
 		newPopulation.fitness[i] = currentPopulation.fitness[i]
