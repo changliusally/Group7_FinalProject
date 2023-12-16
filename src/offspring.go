@@ -28,6 +28,12 @@ func (population *Population) DoOffspring(pairs [][]Individual, landscape Landsc
 	if method == "poisson" {
 		offspring = population.DoOffspringPoisson(pairs, landscape)
 	}
+	if method == "noraml" {
+		offspring = population.DoOffspringNormal(pairs, landscape)
+	}
+	if method == "random" {
+		offspring = population.DoOffspringRandom(pairs, landscape)
+	}
 
 	return offspring
 }
@@ -189,4 +195,93 @@ func Poisson(lambda float64) int {
 	}
 
 	return k - 1
+}
+
+func (population *Population) DoOffspringNormal(pairs [][]Individual, landscape Landscape) []Individual {
+	rand.Seed(time.Now().UnixNano())
+	var offspring []Individual
+
+	for _, pair := range pairs {
+		// Determine the number of offspring using Normal distribution
+		numOffspring := Normal(float64(population.fecundity), 1)
+		if numOffspring < 0 {
+			numOffspring = 0 // Ensure non-negative
+		}
+		pairoffspring := make([]Individual, numOffspring)
+
+		for i := 0; i < numOffspring; i++ {
+			pairoffspring[i].age = 0
+
+			// Inherits mother's position
+			pairoffspring[i].position.x, pairoffspring[i].position.y = RandomGridxy(pair[0].gridIn, landscape)
+
+			// Inherits mother's grid
+			pairoffspring[i].gridIn = pair[0].gridIn
+
+			// decide genetic genotype based on the parents.
+			pairoffspring[i].genetics = generateGenetics(pair[0].genetics, pair[1].genetics)
+
+			// Randomly assign sex based on female rate
+			if rand.Float64() < population.femaleRate {
+				pairoffspring[i].sex = 1 // Female
+			} else {
+				pairoffspring[i].sex = 0 // Male
+			}
+
+			offspring = append(offspring, pairoffspring[i])
+		}
+
+	}
+
+	// Add the offspring to the population
+	// population.individuals = append(population.individuals, offspring...)
+
+	return offspring
+}
+
+func Normal(mean, stddev float64) int {
+	return int(rand.NormFloat64()*stddev + mean)
+}
+
+func (population *Population) DoOffspringRandom(pairs [][]Individual, landscape Landscape) []Individual {
+	rand.Seed(time.Now().UnixNano())
+	var offspring []Individual
+
+	for _, pair := range pairs {
+		// Determine the number of offspring using a random distribution from 0 to fecundity
+		numOffspring := RandomFecundity(float64(population.fecundity))
+		pairoffspring := make([]Individual, numOffspring)
+
+		for i := 0; i < numOffspring; i++ {
+			pairoffspring[i].age = 0
+
+			// Inherits mother's position
+			pairoffspring[i].position.x, pairoffspring[i].position.y = RandomGridxy(pair[0].gridIn, landscape)
+
+			// Inherits mother's grid
+			pairoffspring[i].gridIn = pair[0].gridIn
+
+			// decide genetic genotype based on the parents.
+			pairoffspring[i].genetics = generateGenetics(pair[0].genetics, pair[1].genetics)
+
+			// Randomly assign sex based on female rate
+			if rand.Float64() < population.femaleRate {
+				pairoffspring[i].sex = 1 // Female
+			} else {
+				pairoffspring[i].sex = 0 // Male
+			}
+
+			offspring = append(offspring, pairoffspring[i])
+		}
+
+	}
+
+	// Add the offspring to the population
+	// population.individuals = append(population.individuals, offspring...)
+
+	return offspring
+}
+
+func RandomFecundity(fecundity float64) int {
+	return int(rand.Float64() * fecundity)
 }
