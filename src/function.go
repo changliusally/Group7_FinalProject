@@ -530,3 +530,55 @@ func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 	return individuals
 
 }
+
+//CalculateAA takes a population as input and returns the number of individuals 
+//in the population whose genetics is AA
+func CalculateAA(pop Population) int {
+	count := 0
+	for i := range pop.individuals {
+		if pop.individuals[i].genetics == 2 {
+			count++
+		}
+	}
+	return count
+}
+
+//CalculateAa takes a population as input and returns the number of individuals 
+//in the population whose genetics is Aa
+func CalculateAa(pop Population) int {
+	count := 0
+	for i := range pop.individuals {
+		if pop.individuals[i].genetics == 1 {
+			count++
+		}
+	}
+	return count
+}
+
+//Calculateaa takes a population as input and returns the number of individuals 
+//in the population whose genetics is aa
+func Calculateaa(pop Population) int {
+	count := 0
+	for i := range pop.individuals {
+		if pop.individuals[i].genetics == 0 {
+			count++
+		}
+	}
+	return count
+}
+
+//CalculateFrequency takes a population and the number of individuals in the population 
+//whose genetics is what we want as input and returns the proportion of individuals 
+//in the population of wanted 
+func CalculateFrequency(pop Population, num int) float64 {
+	n := len(pop.individuals)
+	freq := float64(numAA)/float64(n)
+	return freq
+}
+
+//CalAFreq takes the proportion of AA and Aa individuals as input 
+//and returns the A allel frequency of this population
+func CalAFreq(freqAA, freqAa float64) float64 {
+	freq := freqAA + freqAa/2.0 
+	return freq
+}
