@@ -62,11 +62,11 @@ func DrawPopulation(population Population, landscape Landscape) image.Image {
 		y := individual.position.y
 
 		var color color.Color
-		if individual.genetics == 0 { // AA
+		if individual.genetics == 0 { // aa
 			color = MakeColor(255, 0, 0) // red
 		} else if individual.genetics == 1 { // Aa
 			color = MakeColor(255, 165, 0) // orange
-		} else { // aa
+		} else { // AA
 			color = MakeColor(255, 255, 0) // yellow
 		}
 
