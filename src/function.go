@@ -470,6 +470,9 @@ func WriteCsv(individuals []Individual, filename string) {
 
 }
 
+//FindGrid takes a lacdscape and a slice of individuals as input and returns the same 
+//individual slice with each individual's gridIn updated based on the their position 
+//in the landscape 
 func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 	width := landscape.width
 
