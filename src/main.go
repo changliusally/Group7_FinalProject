@@ -142,7 +142,7 @@ func UpdateGeneration(currentPopulation Population, landscape Landscape, model M
 	newPopulation := CopyPop(currentPopulation)
 	// update the population
 	// find the mating pairs for this generation and the total number of new born individuals in this generation
-	matingPair, numNewBorn := DoMate(newPopulation)
+	matingPair, _ := DoMate(newPopulation)
 	//fmt.Println("mating finish")
 	newBornIndividuals := newPopulation.DoOffspring(matingPair, landscape, newPopulation.offspringMethod)
 	//fmt.Println("offspring finish")
@@ -150,7 +150,7 @@ func UpdateGeneration(currentPopulation Population, landscape Landscape, model M
 	probMatrix := CalProb(newPopulation.dispersalMethod, cdmat)
 	deathCount := newPopulation.DoDispersal(landscape, newBornIndividuals, probMatrix)
 	//fmt.Println("disperse finish")
-	deathCountNew := 2*numNewBorn - deathCount
+	deathCountNew := len(newBornIndividuals) - deathCount
 	newPopulation.AdultDeath(deathCountNew)
 	//fmt.Println("mortility finish")
 	newPopulation.UpdateAge()
