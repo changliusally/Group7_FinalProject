@@ -1,0 +1,2 @@
+xyfilename,mcruns,looptime,output_years,cdmat,mateFrequency,matureAge,fecundity,femaleRate,popModel,r,K_env,K_Grid,width,Fitness_aa,Fitness_Aa,Fitness_AA
+500,2,200,0,cdmatrix.csv,0.5,1,2,0.5,exp,1,1040,500,400,0.8,0.4,0.4

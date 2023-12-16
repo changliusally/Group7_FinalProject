@@ -1,6 +1,6 @@
-package main
+package main 
 
-//This is the part for doing adult death after we do offspring disperse.
+//This is the part for doing adult death after we do offspring disperse. 
 
 import (
 	"math/rand"
@@ -8,23 +8,23 @@ import (
 	"fmt"
 )
 
-// AdultDeath takes the population and totalDeathCount as input and returns the population
-// with certain inividuals deleted. The selection of death individuals is based on the
-// population's death rate, female rate, and genetics ratio
-func (population *Population) AdultDeath(totalDeathCount int) { //, pAA, pAa, paa float64) {
-	//check if the totalDeathCount is negative
-	if totalDeathCount <= 0 {
+//AdultDeath takes the population and totalDeathCount as input and returns the population
+//with certain inividuals deleted. The selection of death individuals is based on the
+//population's death rate, female rate, and genetics ratio
+func (population *Population) AdultDeath(totalDeathCount int) {//, pAA, pAa, paa float64) {
+	//check if the totalDeathCount is negative 
+	if totalDeathCount <=0 {
 		fmt.Println(totalDeathCount)
 	} else {
-		//check how many individuals are in the current population
+		//check how many individuals are in the current population 
 		count := 0
-		individualToDie := make([]Individual, 0) //all death candidates
-		AA := make([]Individual, 0)
-		Aa := make([]Individual, 0)
-		aa := make([]Individual, 0)
+		individualToDie := make([]Individual, 0) //all death candidates 
+		AA := make([]Individual,0)
+		Aa := make([]Individual,0)
+		aa := make([]Individual,0)
 
 		// take all aldults as death candidate, divide them into different gene groups
-		for i := range population.individuals {
+		for i:= range population.individuals {
 			if population.individuals[i].age > 0 {
 				individualToDie = append(individualToDie, population.individuals[i])
 				count++
@@ -39,21 +39,21 @@ func (population *Population) AdultDeath(totalDeathCount int) { //, pAA, pAa, pa
 		}
 
 		if count < totalDeathCount {
-			totalDeathCount = count
+			totalDeathCount = count 
 		}
 		// paa := 0.25
 		// pAa := 0.375
 		// pAA := 0.375
 
 		paa := 1.0 - population.fitness[0]
-		pAa := 1.0 - population.fitness[1]
-		pAA := 1.0 - population.fitness[2]
+  		pAa := 1.0 - population.fitness[1]
+  		pAA := 1.0 - population.fitness[2]
 
-		sum := paa + pAa + pAA
+  		sum := paa + pAa + pAA
 
-		paa = paa / sum
-		pAa = pAa / sum
-		pAA = pAA / sum
+  		paa = paa / sum 
+  		pAa = pAa / sum
+  		pAA = pAA / sum
 
 		lenaa := int(float64(totalDeathCount) * paa)
 		lenAa := int(float64(totalDeathCount) * pAa)
@@ -68,7 +68,7 @@ func (population *Population) AdultDeath(totalDeathCount int) { //, pAA, pAa, pa
 		if lenAA > len(AA) {
 			lenAA = len(AA)
 		}
-		total := totalDeathCount - lenaa - lenAa - lenAA
+		total := totalDeathCount - lenaa - lenAa - lenAA 
 
 		for i := 0; i < lenaa; i++ {
 			randVal := rand.Intn(len(aa))
@@ -96,13 +96,13 @@ func (population *Population) AdultDeath(totalDeathCount int) { //, pAA, pAa, pa
 				individualToDie = Delete(individualToDie, individualToDie[rand])
 			}
 		}
-
+		
 	}
-
+	
 }
 
-// CopyIndividual takes a slice of individuals as input and returns a
-// slice of individual that is exactly same as the input
+//CopyIndividual takes a slice of individuals as input and returns a
+//slice of individual that is exactly same as the input 
 func CopyIndividual(individuals []Individual) []Individual {
 	newIndividual := make([]Individual, 0)
 	for _, indi := range individuals {
@@ -111,8 +111,8 @@ func CopyIndividual(individuals []Individual) []Individual {
 	return newIndividual
 }
 
-// contains takes a slice and an element as input as returns a boolean
-// to checks if a slice contains a specific element
+//contains takes a slice and an element as input as returns a boolean 
+//to checks if a slice contains a specific element
 func contains(slice []int, element int) bool {
 	for _, ele := range slice {
 		if ele == element {
@@ -122,8 +122,9 @@ func contains(slice []int, element int) bool {
 	return false
 }
 
-// UpdateAge takes a population as input and update all individuals' age of this population
-func (pop *Population) UpdateAge() {
+
+//UpdateAge takes a population as input and update all individuals' age of this population 
+func (pop *Population)UpdateAge() {
 	for i := range pop.individuals {
 		pop.individuals[i].age += 1
 	}

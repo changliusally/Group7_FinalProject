@@ -1,37 +1,35 @@
 package main
 
 import (
-	"canvas"
+	"github.com/llgcode/draw2d/draw2dimg"
 	"image"
 	"image/color"
 	"math"
-
-	"github.com/llgcode/draw2d/draw2dimg"
+	"canvas"
 )
-
 type Canvas struct {
 	gc     *draw2dimg.GraphicContext
 	img    image.Image
 	width  int // both width and height are in pixels
 	height int
 }
-
-// AnimateSystem takes a slice of Sky objects along with a canvas width
-// parameter and generates a slice of images corresponding to drawing each Sky
-// on a canvasWidth x canvasWidth canvas
+//AnimateSystem takes a slice of Sky objects along with a canvas width
+//parameter and generates a slice of images corresponding to drawing each Sky
+//on a canvasWidth x canvasWidth canvas
 func AnimateSystem(populations []Population, landscape Landscape, drawingFrequency int) []image.Image {
 	images := make([]image.Image, 0)
 
 	for i := range populations {
-		//if is is divisible by
-		if i%drawingFrequency == 0 {
+		//if is is divisible by 
+		if i % drawingFrequency == 0 {
 			images = append(images, DrawPopulation(populations[i], landscape))
 		}
 	}
 
+
+
 	return images
 }
-
 // function DrawPopulation
 func DrawPopulation(population Population, landscape Landscape) image.Image {
 	canvasWidth := landscape.width
@@ -79,6 +77,7 @@ func DrawPopulation(population Population, landscape Landscape) image.Image {
 
 	return c.GetImage()
 }
+
 
 // function DrawPopulation to draw png, rather than gif
 func (population Population) DrawPopulation2(landscape Landscape, filename string) {

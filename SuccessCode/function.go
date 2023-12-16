@@ -12,7 +12,7 @@ import (
 // input: a csv file
 // output: a slice of slice of string recording the data
 func Loadfile(filename string, header bool) [][]string {
-
+	
 	// Open the file
 	file, err := os.Open(filename) //
 	if err != nil {
@@ -43,14 +43,13 @@ func Loadfile(filename string, header bool) [][]string {
 
 // read parameters from input file
 // input: a slice of string
-func ReadInputParameters(parameters []string, datadir string) (Population, Landscape, Model, int, int, int, [][]float64) {
+func ReadInputParameters(parameters []string,datadir string) (Population, Landscape, Model, int, int, int, [][]float64) {
 	// initialize the population
 	var population Population
 
 	var individuals []Individual
 
-	// first column is the filename of xyfile(individuals information) or a number of individuals
-	// if it is a number, then random generate individuals
+	// first column is the filename of xyfile(individuals information)
 	xyfile := parameters[0]
 	random := false
 	// check xyfile whether is a number or a filename
@@ -60,7 +59,7 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 		random = true
 	} else {
 		// xyfile is a filename
-		xyFile := datadir + xyfile
+		xyFile := datadir+xyfile
 		xyParameters := Loadfile(xyFile, true)
 		if len(xyParameters[0]) != 6 {
 			panic("Error: xyfile column number is not correct")
@@ -71,7 +70,7 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 		//fmt.Println("after", population.individuals)
 	}
 
-	// fmt.Println("hello0", individuals)
+	//fmt.Println("hello0", individuals)
 	// second column is the int number of Monte-Carlo run
 	mcRun, err1 := strconv.Atoi(parameters[1])
 	if err1 != nil {
@@ -101,12 +100,12 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 
 	// fifth column is the filename of cdmatrix
 	cdmatrix := parameters[4]
-	cdPath := datadir + cdmatrix
+	cdPath:=datadir+cdmatrix
 	cdmatData := Loadfile(cdPath, false)
-	if cdmatData[0][0] != "0" { // check if the first column is 0
-		//fmt.Println(cdmatData[0][0])
-		panic("Error: cdmatrix first column is not 0")
-	}
+	// if cdmatData[0][0] != "0" { // check if the first column is 0
+	// 	//fmt.Println(cdmatData[0][0])
+	// 	panic("Error: cdmatrix first column is not 0")
+	// }
 	cdmat := ReadCdmatrix(cdmatData)
 
 	// sixth column is the float number of mateFreq
@@ -149,17 +148,12 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 	}
 	population.femaleRate = femaleRate
 
-	// tenth column is the string of disperal method
-	dispersalMethod := parameters[9]
-	// linear, inverse2
-	if dispersalMethod != "linear" && dispersalMethod != "inverse2" {
-		panic("Error: dispersal method is wrong")
-	}
-	population.dispersalMethod = dispersalMethod
-
 	// initialize the landscape
 	var landscape Landscape
 	var model Model
+
+	// tenth column is the string of population model
+	model.popModel = parameters[9]
 
 	// eleventh column is the float number of density dependent growth rate	r	‘1.0’	The growth rate used in the density dependent functions above (‘logistic’, ‘richards’, and ‘rickers’).
 	r_env, err8 := strconv.ParseFloat(parameters[10], 64)
@@ -204,6 +198,8 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 	landGrid := InitializeLand(landscape.width)
 	landscape.grid = landGrid
 
+
+
 	if random == true {
 		// generate the individuals
 		individuals = RandomGenerateIndividuals(xyVal, landscape)
@@ -238,13 +234,6 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 	}
 	population.fitness = fitness
 
-	// eighteenth column is the string of offspring method
-	offspringMethod := parameters[17]
-	// poisson, constant
-	if offspringMethod != "poisson" && offspringMethod != "constant" {
-		panic("Error: offspring method is wrong")
-	}
-	population.offspringMethod = offspringMethod
 
 	return population, landscape, model, mcRun, looptime, outputYear, cdmat
 }
@@ -254,12 +243,12 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 // output: a slice of individuals
 func ReadXyfile(individualData [][]string) []Individual {
 	// initialize the individuals
-	individuals := make([]Individual, len(individualData))
+	individuals:=make([]Individual,len(individualData))
 	fmt.Println(individualData)
 
 	for i := range individualData {
-		row := individualData[i]
-
+		row:=individualData[i]
+	
 		// initialize the individual
 		var individual Individual
 
@@ -331,7 +320,7 @@ func ReadXyfile(individualData [][]string) []Individual {
 			panic("Error: genetics wrong")
 		}
 
-		individuals[i] = individual
+		individuals[i]=individual
 	}
 
 	return individuals
@@ -342,15 +331,15 @@ func ReadXyfile(individualData [][]string) []Individual {
 func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 	// initialize the individuals
 	var individuals []Individual
-
+   
 	// generate the position, age, sex ,id, genetics for every individual
 	for i := 0; i < num; i++ {
 		var individual Individual
-		individual.age = rand.Intn(4) //0,1,2,3
-		individual.sex = rand.Intn(2) //0,1
-		individual.id = i
-		//individual.genetics = rand.Intn(3) //0,1,2
-		randGene := rand.Intn(4)
+	 	individual.age = rand.Intn(4) //0,1,2,3
+	 	individual.sex = rand.Intn(2) //0,1
+	 	individual.id = i
+	 	//individual.genetics = rand.Intn(3) //0,1,2
+	 	randGene := rand.Intn(4)
 		if randGene == 0 {
 			individual.genetics = 0
 		} else if randGene == 1 || randGene == 2 {
@@ -358,17 +347,17 @@ func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 		} else {
 			individual.genetics = 2
 		}
-		// rand position
-		individual.gridIn = rand.Intn(16)
-		var position OrderedPair
-		position.x, position.y = RandomGridxy(individual.gridIn, landscape)
-		individual.position = position
-		individuals = append(individuals, individual)
+	 	// rand position
+	 	individual.gridIn = rand.Intn(16) //gridin 和 width的关系是什么
+	 	var position OrderedPair
+	 	position.x, position.y = RandomGridxy(individual.gridIn, landscape)
+	 	individual.position = position
+	 	individuals = append(individuals, individual)
 	}
 	fmt.Println(individuals)
-
+   
 	return individuals
-}
+   }
 
 // read cdmatrix
 // input: a slice of slice of string
@@ -413,11 +402,8 @@ func WriteOutput(generations []Generation, outputYear int, outdir string, landsc
 				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
 				WriteCsv(generations[i].population[m].individuals, filename)
 				// this is for the generation of pdf rather than gif
-				// generate the png for every 10 generations
-				if m%10 == 0 {
-					photo := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".png"
-					generations[i].population[m].DrawPopulation2(landscape, photo)
-				}
+				photo := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".png"
+				generations[i].population[m].DrawPopulation2(landscape, photo)
 			}
 			if m == outputYear {
 				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
@@ -470,8 +456,9 @@ func WriteCsv(individuals []Individual, filename string) {
 
 }
 
+
 func FindGrid(landscape Landscape, individuals []Individual) []Individual {
-	width := landscape.width
+	width := landscape.width 
 
 	for i := range individuals {
 		position := individuals[i].position
@@ -492,7 +479,7 @@ func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
 				individuals[i].gridIn = 8
 			} else {
-				individuals[i].gridIn = 12
+				individuals[i].gridIn =12
 			}
 		} else if position.x >= float64(width)/4.0 && position.x < float64(width)/2.0 {
 			if position.y >= 0 && position.y < float64(width)/4.0 {
@@ -528,5 +515,6 @@ func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 
 	}
 	return individuals
+	
 
 }
