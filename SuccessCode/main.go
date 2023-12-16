@@ -61,17 +61,17 @@ func main() {
 	fmt.Println("Output file is written")
 
 	// darw the output figure
-	images := AnimateSystem(generations[1].population, landscape, 1) //animate the timepoints
+	for i := 0; i < mcRun; i++ {
+		images := AnimateSystem(generations[i].population, landscape, 1) //animate the timepoints
 	
-	fmt.Println("images drawn!")
+		fmt.Println("images drawn!")
 
-	fmt.Println("generate GIF")
+		fmt.Println("generate GIF")
 
-	outputFile := "Simulation_" //output file name
+		outputFile := "PopulationSimulation_favoraa"+ strconv.Itoa(i)  //output file name
 
-	gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
-
-
+		gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
+	}
 
 	fmt.Println("Simulation complete!")
 
