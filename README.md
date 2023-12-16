@@ -49,3 +49,7 @@ cd Group7_FinalProject/src
 - **Generation-wise Gene Type Distribution:** Figures illustrating the distribution of different gene types in the landscape for each generation.
 - **Dynamic Distribution (GIF):** An animated representation showing the temporal changes in gene type distribution across the landscape.
 
+## recorded coding demonstration 
+https://cmu.zoom.us/rec/share/EvVrC_vY5JyX21vG-1jE1B_rr6Wp0P3tm0IfPWN0jAT_4dGww7-XJm__m5QUjHdP.pcSjKvEcQhzOvtSJ?startTime=1702702441000
+密码: .K4f%L#e
+
