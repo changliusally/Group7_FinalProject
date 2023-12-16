@@ -62,11 +62,11 @@ func DrawPopulation(population Population, landscape Landscape) image.Image {
 		y := individual.position.y
 
 		var color color.Color
-		if individual.genetics == 0 { // AA
+		if individual.genetics == 0 { // aa
 			color = MakeColor(255, 0, 0) // red
 		} else if individual.genetics == 1 { // Aa
 			color = MakeColor(255, 165, 0) // orange
-		} else { // aa
+		} else { // AA
 			color = MakeColor(255, 255, 0) // yellow
 		}
 
@@ -129,7 +129,7 @@ func (population Population) DrawPopulation2(landscape Landscape, filename strin
 		*/
 
 		//c.SetFillColor(color)
-		c.Circle(x+float64(gridSize)/2, y+float64(gridSize)/2, float64(landscape.width/100))
+		c.Circle(x, y, float64(landscape.width/100))
 		//c.Circle(x, y, float64(landscape.width/100)*10)
 
 		c.Fill()
