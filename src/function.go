@@ -585,3 +585,27 @@ func CalAFreq(freqAA, freqAa float64) float64 {
 	freq := freqAA + freqAa/2.0 
 	return freq
 }
+
+//CalTotalFemale takes a population as input and returns the number of female individuals 
+//in this population 
+func CalTotalFemale(pop Population) int {
+	count := 0 
+	for i := range pop.individuals {
+		if pop.individuals[i].sex == 1 {
+			count++
+		}
+	}
+	return count
+}
+
+//CalTotalMale takes a population as input and returns the number of male individuals 
+//in this population 
+func CalTotalMale(pop Population) int {
+	count := 0 
+	for i := range pop.individuals {
+		if pop.individuals[i].sex == 0 {
+			count++
+		}
+	}
+	return count
+}
