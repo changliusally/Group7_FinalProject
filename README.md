@@ -31,7 +31,7 @@ To run the simulation, prepare the input data as follows:
 
 1. **Multiple cdmatrix:** Data matrices representing various conditions.
 2. **Initialized Individuals:** Starting configuration of individuals for the simulation.
-3. **Parameters File (XLS):** Contains essential parameters such as `xyfilename`, `mcruns`, `looptime`, `output_years`, `gridformat`, `matecdmat`, `dispcdmat`, `matemoveno`, `mateFrequency`, `popModel`, `r`, `K_env`, `Fitness_AA`, `Fitness_Aa`, `Fitness_aa`.
+3. **Parameters File (xls):** Contains essential parameters such as `xyfilename`, `mcruns`, `looptime`, `output_years`, `gridformat`, `matecdmat`, `dispcdmat`, `matemoveno`, `mateFrequency`, `popModel`, `r`, `K_env`, `Fitness_AA`, `Fitness_Aa`, `Fitness_aa`.
 
 
 ## Running the Simulation
