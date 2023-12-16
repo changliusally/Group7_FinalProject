@@ -1,13 +1,13 @@
 # Project: Gene Structure Simulation in Complex Landscapes
 
 ## Overview
- This project aims to simulate gene structure changes in several generations on different landscapes, since complex landscape is an important disturbing factor for stable gene structure of a large population. Except for population statistics like heterozygosity, it also provide a simple visualization for the distribution of the generation of different genotypes.
+ This project aims to simulate gene structure changes in several generations on different landscapes, since complex landscape is an important disturbing factor for stable gene structure of a large population. This project also provide a simple visualization for the distribution of the generation of different genotypes.
 
 ## Features
 - **Simulation of Gene Structure Changes:** Simulates how gene structures evolve over multiple generations in different landscapes.
-- **Population Statistics:** Provides statistics such as heterozygosity to understand genetic diversity.
+- **Population Statistics:** Provides statistics such as allel frequency and genotype frequency in each generation to understand genetic diversity.
 - **Visualization:** Offers simple yet informative visualizations of the distribution of different genotypes across generations.
-- **Dynamic Landscape Modeling:** Allows for the examination of gene structure stability in complex landscapes.
+- **Dynamic Landscape Modeling:** Allows for the examination of genetic dynamics in complex landscapes.
 
   To include details about the functions and their roles in the simulation process in your README file, you can add a new section called "Module Description" or "Simulation Steps." Here's how you can integrate this into the Markdown template I provided earlier:
 
