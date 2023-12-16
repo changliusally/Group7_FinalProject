@@ -1,4 +1,4 @@
-# Project: Gene Structure Simulation in Complex Landscapes
+# Project: Simulating landscape resistance on gene flow based on the CDPOP model
 
 ## Overview
  This project aims to simulate gene structure changes in several generations on different landscapes, since complex landscape is an important disturbing factor for stable gene structure of a large population. This project also provide a simple visualization for the distribution of the generation of different genotypes.
