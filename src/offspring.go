@@ -32,6 +32,9 @@ func (population *Population) DoOffspring(pairs [][]Individual, landscape Landsc
 	return offspring
 }
 
+//DoOffspringConstant takes a slice of paired individuals and a landscape as input and 
+//returns a slice of individuals that is the offsprings by the couples in the pair 
+//individual slices 
 func (population *Population) DoOffspringConstant(pairs [][]Individual, landscape Landscape) []Individual {
 	var offspring []Individual
 
