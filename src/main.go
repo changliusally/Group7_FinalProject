@@ -6,8 +6,8 @@ import (
 	"os"
 	"runtime"
 	"time"
+	"strconv"
 )
-
 func main() {
 
 	// set up the timer
@@ -34,7 +34,7 @@ func main() {
 	if len(os.Args) >= 4 {
 		datadir = inputFolder + string('/')
 		fileans = datadir + inputFile
-		outdir = datadir + output + foldertime + string('/')
+		outdir = "output/" + output + foldertime + string('/')
 	} else {
 		panic("User must specify data directory, input file name, and output file directory (e.g., at command line type main.exe ../data/ inputvariables.csv exampleout).")
 	}
@@ -58,18 +58,18 @@ func main() {
 	fmt.Println("Output file is written")
 
 	// darw the output figure
-	images := AnimateSystem(generations[1].population, landscape, 1) //animate the timepoints
+	for i := 0; i < mcRun; i++ {
+		images := AnimateSystem(generations[i].population, landscape, 1) //animate the timepoints
+	
+		fmt.Println("images drawn!")
 
-	fmt.Println("images drawn!")
+		fmt.Println("generate GIF")
 
-	fmt.Println("generate GIF")
+		outputFile := "PopulationSimulation_cdmatrix16_"+ strconv.Itoa(i)  //output file name
 
-	outputFile := "Simulation_" //output file name
-
-	gifhelper.ImagesToGIF(images, "output/"+outputFile) //draw the image and store in output folder
-
+		gifhelper.ImagesToGIF(images, outdir + outputFile) //draw the image and store in output folder
+	}
 	fmt.Println("Simulation complete!")
-
 }
 
 // Monte-Carlo Looping, run parallel

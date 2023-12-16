@@ -255,7 +255,7 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 func ReadXyfile(individualData [][]string) []Individual {
 	// initialize the individuals
 	individuals := make([]Individual, len(individualData))
-	fmt.Println(individualData)
+	//fmt.Println(individualData)
 
 	for i := range individualData {
 		row := individualData[i]
@@ -365,7 +365,7 @@ func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 		individual.position = position
 		individuals = append(individuals, individual)
 	}
-	fmt.Println(individuals)
+	//fmt.Println(individuals)
 
 	return individuals
 }
