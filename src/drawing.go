@@ -129,7 +129,7 @@ func (population Population) DrawPopulation2(landscape Landscape, filename strin
 		*/
 
 		//c.SetFillColor(color)
-		c.Circle(x+float64(gridSize)/2, y+float64(gridSize)/2, float64(landscape.width/100))
+		c.Circle(x, y, float64(landscape.width/100))
 		//c.Circle(x, y, float64(landscape.width/100)*10)
 
 		c.Fill()

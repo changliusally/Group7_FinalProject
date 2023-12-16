@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"time"
 )
 
 // load file from csv and return the content
@@ -103,7 +104,7 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 	cdmatrix := parameters[4]
 	cdPath := datadir + cdmatrix
 	cdmatData := Loadfile(cdPath, false)
-	
+
 	cdmat := ReadCdmatrix(cdmatData)
 
 	// sixth column is the float number of mateFreq
@@ -466,6 +467,24 @@ func WriteCsv(individuals []Individual, filename string) {
 		}
 	}
 
+}
+
+// initializeCDmat generates a 16x16 matrix with random values limited by maxLimit.
+// input: a float64 number
+// output: a slice of slice of float64
+func initializeCDmat(maxLimit float64) [][]float64 {
+	rand.Seed(time.Now().UnixNano())
+
+	matrix := make([][]float64, 16)
+	for i := range matrix {
+		matrix[i] = make([]float64, 16)
+		for j := range matrix[i] {
+			// Generate a random float64 value between 0 and maxLimit
+			matrix[i][j] = rand.Float64() * maxLimit
+		}
+	}
+
+	return matrix
 }
 
 // FindGrid takes a lacdscape and a slice of individuals as input and returns the same
