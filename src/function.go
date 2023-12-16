@@ -238,6 +238,14 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 	}
 	population.fitness = fitness
 
+	// eighteenth column is the string of offspring method
+	offspringMethod := parameters[17]
+	// poisson, constant
+	if offspringMethod != "poisson" && offspringMethod != "constant" {
+		panic("Error: offspring method is wrong")
+	}
+	population.offspringMethod = offspringMethod
+
 	return population, landscape, model, mcRun, looptime, outputYear, cdmat
 }
 
@@ -351,8 +359,7 @@ func RandomGenerateIndividuals(num int, landscape Landscape) []Individual {
 			individual.genetics = 2
 		}
 		// rand position
-		//individual.gridIn = rand.Intn(16) //gridin 和 width的关系是什么
-		individual.gridIn = rand.Intn(900)
+		individual.gridIn = rand.Intn(16)
 		var position OrderedPair
 		position.x, position.y = RandomGridxy(individual.gridIn, landscape)
 		individual.position = position
@@ -386,7 +393,7 @@ func ReadCdmatrix(records [][]string) [][]float64 {
 
 // write output to csv
 // input: a slice of slice of generation, a int number of output year, a string of output directory
-func WriteOutput(generations []Generation, outputYear int, outdir string) {
+func WriteOutput(generations []Generation, outputYear int, outdir string, landscape Landscape) {
 	// make output directory
 	err := os.MkdirAll(outdir, 0777)
 	if err != nil {
@@ -405,6 +412,12 @@ func WriteOutput(generations []Generation, outputYear int, outdir string) {
 			if outputYear == 0 {
 				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
 				WriteCsv(generations[i].population[m].individuals, filename)
+				// this is for the generation of pdf rather than gif
+				// generate the png for every 10 generations
+				if m%10 == 0 {
+					photo := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".png"
+					generations[i].population[m].DrawPopulation2(landscape, photo)
+				}
 			}
 			if m == outputYear {
 				filename := outdir + "/mc" + strconv.Itoa(i) + "/generation" + strconv.Itoa(m) + ".csv"
@@ -457,76 +470,6 @@ func WriteCsv(individuals []Individual, filename string) {
 
 }
 
-/*
-//
-
-	func (pop *Population)UpdateGrid(landscape Landscape) {
-		for _, inid := range pop.individuals {
-			inid.gridIn = FindGrid(landscape, inid)
-		}
-	}
-
-//FindGrid takes a lanscape and a orderedpair as input and returns
-//a integer that represents the grid number of this individual whose
-//position is this orderedpair
-
-	func FindGrid(landscape Landscape, inid Individual) int {
-		width := landscape.width
-
-		position := inid.position
-		//check if the position is valid
-		if position.x > float64(width) || position.x < 0 {
-			panic("Invalid x coordinate")
-		}
-		if position.y > float64(width) || position.y < 0 {
-			panic("Invalid y coordinate")
-		}
-
-		//find the grid number
-		if position.x >= 0.0 && position.x < float64(width)/4.0 {
-			if position.y >= 0.0 && position.y < float64(width)/4.0 {
-				return 0
-			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-				return 4
-			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-				return 8
-			} else {
-				return 12
-			}
-		} else if position.x >= float64(width)/4.0 && position.x < float64(width)/2.0 {
-			if position.y >= 0 && position.y < float64(width)/4.0 {
-				return 1
-			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-				return 5
-			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-				return 9
-			} else {
-				return 13
-			}
-		} else if position.x >= float64(width)/2.0 && position.x < float64(3*width)/4.0 {
-			if position.y >= 0 && position.y < float64(width)/4.0 {
-				return 2
-			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-				return 6
-			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-				return 10
-			} else {
-				return 14
-			}
-		} else {
-			if position.y >= 0 && position.y < float64(width)/4.0 {
-				return 3
-			} else if position.y >= float64(width)/4.0 && position.y < float64(width)/2.0 {
-				return 7
-			} else if position.y >= float64(width)/2.0 && position.y < float64(3*width)/4.0 {
-				return 11
-			} else {
-				return 15
-			}
-		}
-
-}
-*/
 func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 	width := landscape.width
 
