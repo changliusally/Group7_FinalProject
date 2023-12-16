@@ -22,7 +22,7 @@ The simulation is carried out through a series of steps, each handled by differe
 - **dispersal.go:** Handles the dispersal process of individuals in the population.
 - **mortality.go:** Handles the mortality aspect within the population during the simulation. (If you have a module like this)
 - **drawing.go:** Responsible for creating visual outputs. It generates both PNG images and GIF animations to visualize the simulation results.
-- 
+  
 These modules collectively simulate the entire process, including mating, offspring generation, dispersal, and mortality, reflecting the complex dynamics of gene structure changes in varied landscapes.
 
 
