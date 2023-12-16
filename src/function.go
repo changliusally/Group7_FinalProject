@@ -103,10 +103,7 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 	cdmatrix := parameters[4]
 	cdPath := datadir + cdmatrix
 	cdmatData := Loadfile(cdPath, false)
-	if cdmatData[0][0] != "0" { // check if the first column is 0
-		//fmt.Println(cdmatData[0][0])
-		panic("Error: cdmatrix first column is not 0")
-	}
+	
 	cdmat := ReadCdmatrix(cdmatData)
 
 	// sixth column is the float number of mateFreq
