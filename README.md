@@ -52,5 +52,5 @@ cd Group7_FinalProject/src
 ## recorded coding demonstration 
 https://cmu.zoom.us/rec/share/EvVrC_vY5JyX21vG-1jE1B_rr6Wp0P3tm0IfPWN0jAT_4dGww7-XJm__m5QUjHdP.pcSjKvEcQhzOvtSJ?startTime=1702702441000
 
-密码: .K4f%L#e
+password: .K4f%L#e
 
