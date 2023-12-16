@@ -5,9 +5,10 @@ import (
 	"gifhelper"
 	"os"
 	"runtime"
-	"time"
 	"strconv"
+	"time"
 )
+
 func main() {
 
 	// set up the timer
@@ -55,19 +56,21 @@ func main() {
 	fmt.Println("Monte-Carlo Looping is complete")
 	// write the output file
 	WriteOutput(generations, outputYear, outdir, landscape)
+	// write the summary file
+	WriteSummary(generations, outdir)
 	fmt.Println("Output file is written")
 
 	// darw the output figure
 	for i := 0; i < mcRun; i++ {
 		images := AnimateSystem(generations[i].population, landscape, 1) //animate the timepoints
-	
+
 		fmt.Println("images drawn!")
 
 		fmt.Println("generate GIF")
 
-		outputFile := "PopulationSimulation_cdmatrix16_"+ strconv.Itoa(i)  //output file name
+		outputFile := "PopulationSimulation_cdmatrix16_" + strconv.Itoa(i) //output file name
 
-		gifhelper.ImagesToGIF(images, outdir + outputFile) //draw the image and store in output folder
+		gifhelper.ImagesToGIF(images, outdir+outputFile) //draw the image and store in output folder
 	}
 	fmt.Println("Simulation complete!")
 }

@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-// load file
+// load file from csv and return the content
 // input: a csv file
 // output: a slice of slice of string recording the data
 func Loadfile(filename string, header bool) [][]string {
@@ -470,9 +470,9 @@ func WriteCsv(individuals []Individual, filename string) {
 
 }
 
-//FindGrid takes a lacdscape and a slice of individuals as input and returns the same 
-//individual slice with each individual's gridIn updated based on the their position 
-//in the landscape 
+// FindGrid takes a lacdscape and a slice of individuals as input and returns the same
+// individual slice with each individual's gridIn updated based on the their position
+// in the landscape
 func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 	width := landscape.width
 
@@ -534,8 +534,84 @@ func FindGrid(landscape Landscape, individuals []Individual) []Individual {
 
 }
 
-//CalculateAA takes a population as input and returns the number of individuals 
-//in the population whose genetics is AA
+// write summary to csv
+// input: a slice of generation, a string of output directory
+func WriteSummary(generations []Generation, outdir string) {
+
+	// open every monte carlo run directory
+	for i := 0; i < len(generations); i++ {
+		csvOutdir := outdir + "/mc" + strconv.Itoa(i)
+		filename := csvOutdir + "_summary.csv"
+		// header: Year, TotalIndividuals, TotalFemale, TotalMale, AA, Aa, aa, AAFreq, AaFreq, aaFreq, AFreq, aFreq
+		// open the csv file
+		file, err := os.Create(filename)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+
+		// the csv writer use "," as the default delimiter
+		writer := csv.NewWriter(file)
+		defer writer.Flush()
+
+		// write the header
+		header := []string{"Year", "TotalIndividuals", "TotalFemale", "TotalMale", "AA", "Aa", "aa", "AAFreq", "AaFreq", "aaFreq", "AFreq", "aFreq"}
+		err1 := writer.Write(header)
+		if err1 != nil {
+			panic(err1)
+		}
+
+		// write every generation to csv
+		for m := 0; m < len(generations[i].population); m++ {
+			// write the data
+			record := []string{
+				strconv.Itoa(m),
+				strconv.Itoa(len(generations[i].population[m].individuals)),
+				strconv.Itoa(CalTotalFemale(generations[i].population[m])),
+				strconv.Itoa(CalTotalMale(generations[i].population[m])),
+				strconv.Itoa(CalculateAA(generations[i].population[m])),
+				strconv.Itoa(CalculateAa(generations[i].population[m])),
+				strconv.Itoa(Calculateaa(generations[i].population[m])),
+				strconv.FormatFloat(CalculateFrequency(generations[i].population[m], CalculateAA(generations[i].population[m])), 'f', 2, 64),
+				strconv.FormatFloat(CalculateFrequency(generations[i].population[m], CalculateAa(generations[i].population[m])), 'f', 2, 64),
+				strconv.FormatFloat(CalculateFrequency(generations[i].population[m], Calculateaa(generations[i].population[m])), 'f', 2, 64),
+				strconv.FormatFloat(CalAFreq(CalculateFrequency(generations[i].population[m], CalculateAA(generations[i].population[m])), CalculateFrequency(generations[i].population[m], CalculateAa(generations[i].population[m]))), 'f', 2, 64),
+				strconv.FormatFloat(CalAFreq(CalculateFrequency(generations[i].population[m], CalculateAa(generations[i].population[m])), CalculateFrequency(generations[i].population[m], Calculateaa(generations[i].population[m]))), 'f', 2, 64),
+			}
+			err2 := writer.Write(record)
+			if err2 != nil {
+				panic(err2)
+			}
+		}
+	}
+}
+
+// CalTotalFemale takes a population as input and returns the number of female individuals
+// in this population
+func CalTotalFemale(pop Population) int {
+	count := 0
+	for i := range pop.individuals {
+		if pop.individuals[i].sex == 1 {
+			count++
+		}
+	}
+	return count
+}
+
+// CalTotalMale takes a population as input and returns the number of male individuals
+// in this population
+func CalTotalMale(pop Population) int {
+	count := 0
+	for i := range pop.individuals {
+		if pop.individuals[i].sex == 0 {
+			count++
+		}
+	}
+	return count
+}
+
+// CalculateAA takes a population as input and returns the number of individuals
+// in the population whose genetics is AA
 func CalculateAA(pop Population) int {
 	count := 0
 	for i := range pop.individuals {
@@ -546,8 +622,8 @@ func CalculateAA(pop Population) int {
 	return count
 }
 
-//CalculateAa takes a population as input and returns the number of individuals 
-//in the population whose genetics is Aa
+// CalculateAa takes a population as input and returns the number of individuals
+// in the population whose genetics is Aa
 func CalculateAa(pop Population) int {
 	count := 0
 	for i := range pop.individuals {
@@ -558,8 +634,8 @@ func CalculateAa(pop Population) int {
 	return count
 }
 
-//Calculateaa takes a population as input and returns the number of individuals 
-//in the population whose genetics is aa
+// Calculateaa takes a population as input and returns the number of individuals
+// in the population whose genetics is aa
 func Calculateaa(pop Population) int {
 	count := 0
 	for i := range pop.individuals {
@@ -570,18 +646,18 @@ func Calculateaa(pop Population) int {
 	return count
 }
 
-//CalculateFrequency takes a population and the number of individuals in the population 
-//whose genetics is what we want as input and returns the proportion of individuals 
-//in the population of wanted 
+// CalculateFrequency takes a population and the number of individuals in the population
+// whose genetics is what we want as input and returns the proportion of individuals
+// in the population of wanted
 func CalculateFrequency(pop Population, num int) float64 {
 	n := len(pop.individuals)
-	freq := float64(numAA)/float64(n)
+	freq := float64(num) / float64(n)
 	return freq
 }
 
-//CalAFreq takes the proportion of AA and Aa individuals as input 
-//and returns the A allel frequency of this population
+// CalAFreq takes the proportion of AA and Aa individuals as input
+// and returns the A allel frequency of this population
 func CalAFreq(freqAA, freqAa float64) float64 {
-	freq := freqAA + freqAa/2.0 
+	freq := freqAA + freqAa/2.0
 	return freq
 }
