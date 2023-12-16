@@ -30,7 +30,7 @@ type Population struct {
 	femaleRate      float64   //the percetage of the total offsprings that are female
 	fitness         []float64 //fitness[0]:aa, fitness[1]:Aa, fitness[1]:AA
 	dispersalMethod string    //linear or inverse2
-	offspringMethod string    //constant or poisson
+	offspringMethod string    //constant or poisson or random or normal
 }
 
 type Generation struct {

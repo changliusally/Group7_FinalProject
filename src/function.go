@@ -240,10 +240,11 @@ func ReadInputParameters(parameters []string, datadir string) (Population, Lands
 
 	// eighteenth column is the string of offspring method
 	offspringMethod := parameters[17]
-	// poisson, constant
-	if offspringMethod != "poisson" && offspringMethod != "constant" {
+	// poisson, constant, random, normal
+	if offspringMethod != "poisson" && offspringMethod != "constant" && offspringMethod != "random" && offspringMethod != "normal" {
 		panic("Error: offspring method is wrong")
 	}
+
 	population.offspringMethod = offspringMethod
 
 	return population, landscape, model, mcRun, looptime, outputYear, cdmat

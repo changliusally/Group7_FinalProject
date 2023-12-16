@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"math/rand"
 	"time"
 )
@@ -200,6 +201,9 @@ func CalProb(method string, cdmatrix [][]float64) [][]float64 {
 		panic("The cost distance cannot have value smaller than 0.")
 	}
 
+	// the linear function rescale the cost distance to 0-1, according to its max
+	// inverse square form provide a more dramatic reduce rate of dispersal probability when cost distance increases.
+	// random give every cost distance the same dispersal probability
 	if method == "linear" {
 		if max == 0 {
 			for i := 0; i < len(cdmatrix); i++ {
@@ -226,6 +230,50 @@ func CalProb(method string, cdmatrix [][]float64) [][]float64 {
 				} else {
 					probMatrix[i][j] = 1.0
 				}
+
+			}
+		}
+	}
+
+	if method == "gaussian" {
+		FB := 1.0
+		FC := 3.14
+		FA := 1.0
+
+		for i := 0; i < len(cdmatrix); i++ {
+			for j := 0; j < len(cdmatrix[0]); j++ {
+				if cdmatrix[i][j] != 0 {
+					probval := cdmatrix[i][j]
+					FScaleMax := FindMax(cdmatrix)
+					FScaleMin := FindMin(cdmatrix)
+					probMatrix[i][j] = FB + math.Sqrt(-2*float64(FC)*float64(FC)*math.Log((probval*(FScaleMax-FScaleMin)+FScaleMin)/float64(FA)))
+				} else {
+					probMatrix[i][j] = 1.0
+				}
+
+			}
+		}
+	}
+
+	if method == "random" {
+		for i := 0; i < len(cdmatrix); i++ {
+			for j := 0; j < len(cdmatrix[0]); j++ {
+
+				probMatrix[i][j] = 1.0
+
+			}
+		}
+	}
+
+	// it is the negative exponential form
+	if method == "negative" {
+		for i := 0; i < len(cdmatrix); i++ {
+			for j := 0; j < len(cdmatrix[0]); j++ {
+				FB := 1.0
+				FA := 1.0
+				FScaleMax := FindMax(cdmatrix)
+				FScaleMin := FindMin(cdmatrix)
+				probMatrix[i][j] = math.Log((cdmatrix[i][j]*(FScaleMax-FScaleMin)+FScaleMin)/float64(FA)) / (-float64(FB) * math.Log(10))
 
 			}
 		}

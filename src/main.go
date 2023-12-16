@@ -54,10 +54,12 @@ func main() {
 	generations := MonteCarloLoopingMulti(mcRun, looptime, cdmat, population, landscape, model)
 
 	fmt.Println("Monte-Carlo Looping is complete")
+
 	// write the output file
 	WriteOutput(generations, outputYear, outdir, landscape)
 	// write the summary file
 	WriteSummary(generations, outdir)
+
 	fmt.Println("Output file is written")
 
 	// darw the output figure
@@ -76,6 +78,8 @@ func main() {
 }
 
 // Monte-Carlo Looping, run parallel
+// input: the int number of Monte-Carlo run, the int number of generation looping, the cd matrix, the population, the landscape, the model struct
+// output: a slice of generation
 func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, population Population, landscape Landscape, model Model) []Generation {
 	// get the number of processors
 	numProcessors := runtime.NumCPU()
@@ -87,6 +91,7 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 	n := mcRun / numProcessors
 	MonteResult := make([]Generation, 0)
 
+	// create a channel to store the output
 	output := make(chan []Generation, numProcessors)
 
 	for i := 0; i < numProcessors; i++ {
@@ -109,6 +114,8 @@ func MonteCarloLoopingMulti(mcRun int, looptime int, cdmat [][]float64, populati
 }
 
 // Monte-Carlo Looping, run single processor
+// input: the int number of Monte-Carlo run, the int number of generation looping, the cd matrix, the population, the landscape, the model struct
+// output: a slice of generation
 func MonteCarloLoopingSingle(n int, looptime int, cdmat [][]float64, landscape Landscape, model Model, population Population, output chan []Generation) {
 
 	generations := make([]Generation, n)
@@ -123,7 +130,9 @@ func MonteCarloLoopingSingle(n int, looptime int, cdmat [][]float64, landscape L
 
 }
 
-// every generation looping
+// GenerationLooping in each Monte-Carlo run
+// input: the int number of generation looping, the cd matrix, the population, the landscape, the model struct
+// output: a generation
 func GenerationLooping(looptime int, cdmat [][]float64, landscape Landscape, model Model, population Population) Generation {
 	// initialize the generation, it is the timepoints slice of population
 	generation := make([]Population, looptime+1)
@@ -140,7 +149,9 @@ func GenerationLooping(looptime int, cdmat [][]float64, landscape Landscape, mod
 
 }
 
-// update the generation
+// update the generation, each generation looping do mating, offspring, dispersal, and mortality, and update the population
+// input: the current population, the landscape, the model struct, the cd matrix
+// output: the updated population
 func UpdateGeneration(currentPopulation Population, landscape Landscape, model Model, cdmat [][]float64) Population {
 	newPopulation := CopyPop(currentPopulation)
 	// update the population
@@ -169,9 +180,11 @@ func UpdateGeneration(currentPopulation Population, landscape Landscape, model M
 func CopyPop(currentPopulation Population) Population {
 	var newPopulation Population
 	newPopulation.individuals = make([]Individual, len(currentPopulation.individuals))
+	// copy the individuals
 	for i := range newPopulation.individuals {
 		newPopulation.individuals[i] = CopyInd(currentPopulation.individuals[i])
 	}
+	// copy other fields
 	newPopulation.matureAge = currentPopulation.matureAge
 	newPopulation.deathRate = currentPopulation.deathRate
 	newPopulation.mateFreq = currentPopulation.mateFreq
@@ -193,7 +206,6 @@ func CopyInd(currentIndividual Individual) Individual {
 	newIndividual.id = currentIndividual.id
 	newIndividual.position.x = currentIndividual.position.x
 	newIndividual.position.y = currentIndividual.position.y
-
 	newIndividual.sex = currentIndividual.sex
 	newIndividual.age = currentIndividual.age
 	newIndividual.genetics = currentIndividual.genetics
