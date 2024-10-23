@@ -9,8 +9,6 @@
 - **Visualization:** Offers simple yet informative visualizations of the distribution of different genotypes across generations.
 - **Dynamic Landscape Modeling:** Allows for the examination of genetic dynamics in complex landscapes.
 
-  To include details about the functions and their roles in the simulation process in your README file, you can add a new section called "Module Description" or "Simulation Steps." Here's how you can integrate this into the Markdown template I provided earlier:
-
 
 ## Module Description
 
